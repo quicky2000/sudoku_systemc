@@ -1,0 +1,3 @@
+depend:EXT_systemc
+CFLAGS:
+LDFLAGS:
