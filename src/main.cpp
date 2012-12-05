@@ -1,4 +1,4 @@
-#include "top.hpp"
+#include "top.h"
 
 int sc_main(int argc, char ** argv)
 {

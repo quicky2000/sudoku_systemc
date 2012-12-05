@@ -1,7 +1,7 @@
 #ifndef S_INTERNAL_STATE_HPP
 #define S_INTERNAL_STATE_HPP
 
-#include "S_types.hpp"
+#include "S_types.h"
 
 template<unsigned int SIZE> 
 class S_internal_state

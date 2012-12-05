@@ -2,7 +2,7 @@
 #define S_BUS_HPP
 
 #include "systemc.h"
-#include "S_types.hpp"
+#include "S_types.h"
 #include <string>
 
 template<unsigned int SIZE>

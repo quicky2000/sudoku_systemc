@@ -1,9 +1,8 @@
 #ifndef S_MESSAGE_SET_VALUE_HPP
 #define S_MESSAGE_SET_VALUE_HPP
 
-#include "S_message_base.hpp"
-
-#include "S_message_analyzer_if.hpp"
+#include "S_message_base.h"
+#include "S_message_analyzer_if.h"
 
 template<unsigned int SIZE>
 class S_message_set_value: public S_message_base<SIZE>

@@ -2,8 +2,8 @@
 #define S_HPP
 
 #include "systemc.h"
-#include "S_cell.hpp"
-#include "S_bus.hpp"
+#include "S_cell.h"
+#include "S_bus.h"
 #include <iostream>
 #include <map>
 

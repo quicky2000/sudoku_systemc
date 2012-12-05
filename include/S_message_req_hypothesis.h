@@ -1,9 +1,8 @@
 #ifndef S_MESSAGE_REQ_HYPOTHESIS_HPP
 #define S_MESSAGE_REQ_HYPOTHESIS_HPP
 
-#include "S_message_base.hpp"
-
-#include "S_message_analyzer_if.hpp"
+#include "S_message_base.h"
+#include "S_message_analyzer_if.h"
 
 template<unsigned int SIZE>
 class S_message_req_hypothesis: public S_message_base<SIZE>

@@ -5,12 +5,12 @@
 #include <iostream>
 #include <sstream>
 #include <inttypes.h>
-#include "S_input_port.hpp"
-#include "S_output_port.hpp"
-#include "S_message_box.hpp"
-#include "S_message_factory.hpp"
-#include "S_internal_state.hpp"
-#include "S_message_analyzer_if.hpp"
+#include "S_input_port.h"
+#include "S_output_port.h"
+#include "S_message_box.h"
+#include "S_message_factory.h"
+#include "S_internal_state.h"
+#include "S_message_analyzer_if.h"
 
 template<unsigned int SIZE> class S_cell:public sc_module,
   public S_message_analyser_if<SIZE>

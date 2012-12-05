@@ -1,7 +1,7 @@
 #ifndef S_MESSAGE_BASE_HPP
 #define S_MESSAGE_BASE_HPP
 
-#include "S_types.hpp"
+#include "S_types.h"
 
 template<unsigned int SIZE>
 class S_message_analyser_if;

@@ -2,7 +2,7 @@
 #define S_TOP_HPP
 
 #include "systemc.h"
-#include "S.hpp"
+#include "S.h"
 
 class top:public sc_module
 {

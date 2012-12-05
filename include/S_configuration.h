@@ -1,7 +1,7 @@
 #ifndef S_CONFIGURATION_HPP
 #define S_CONFIGURATION_HPP
 
-#include "S_utils.hpp"
+#include "S_utils.h"
 
 template<unsigned int SIZE>
 class S_configuration

@@ -1,7 +1,7 @@
 #ifndef S_MESSAGE_BOX_HPP
 #define S_MESSAGE_BOX_HPP
 
-#include "S_message_base.hpp"
+#include "S_message_base.h"
 
 template<unsigned int SIZE>
 class S_message_box

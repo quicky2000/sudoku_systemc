@@ -1,7 +1,7 @@
 #ifndef S_TYPES_HPP
 #define S_TYPES_HPP
 
-#include "S_configuration.hpp"
+#include "S_configuration.h"
 #include "systemc.h"
 
 template<unsigned int SIZE>

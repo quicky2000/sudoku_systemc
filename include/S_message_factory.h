@@ -1,9 +1,9 @@
 #ifndef S_MESSAGE_FACTORY_HPP
 #define S_MESSAGE_FACTORY_HPP
 
-#include "S_message_set_value.hpp"
-#include "S_message_release_value.hpp"
-#include "S_message_req_hypothesis.hpp"
+#include "S_message_set_value.h"
+#include "S_message_release_value.h"
+#include "S_message_req_hypothesis.h"
 
 template<unsigned int SIZE>
 class S_message_factory
