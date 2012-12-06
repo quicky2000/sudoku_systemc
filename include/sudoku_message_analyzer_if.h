@@ -17,6 +17,7 @@ namespace sudoku_systemc
       virtual void treat(sudoku_message_set_value<SIZE> const * p_message)=0;
       virtual void treat(sudoku_message_release_value<SIZE> const * p_message)=0;
       virtual void treat(sudoku_message_req_hypothesis<SIZE> const * p_message)=0;
+      inline virtual ~sudoku_message_analyser_if(){}
     };
 }
 #endif // SUDOKU_MESSAGE_ANALYSER_IF_H
