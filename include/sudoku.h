@@ -82,6 +82,15 @@ namespace sudoku_systemc
 	    }
 	}
 
+      //------------------------------------------------------------------------
+      bool is_cell_value_set(unsigned int p_x,unsigned int p_y)const
+      {
+	assert(p_x < SIZE * SIZE);
+	assert(p_y < SIZE * SIZE);
+	uint32_t l_id = p_x + p_y *SIZE *SIZE ; 
+	return m_cells2[l_id]->is_value_set();
+      }
+
       sc_in<bool> m_clk;
   private:
       void clk_management(void)

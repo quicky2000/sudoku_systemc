@@ -52,6 +52,11 @@ namespace sudoku_systemc
 	    sensitive << m_clk.pos();
 	  }
 
+	bool is_value_set(void)const
+	{
+	  return m_internal_state.is_value_set();
+	}
+
 	sc_in<bool> m_clk;
 	sudoku_input_port<SIZE> m_input_port;
 	sudoku_output_port<SIZE> m_output_port;
