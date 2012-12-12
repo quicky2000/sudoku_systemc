@@ -35,7 +35,8 @@ namespace sudoku_systemc
 	m_horizontal_group((p_y /SIZE) % SIZE),
 	m_horizontal_sub_group(p_y % SIZE),
 	m_internal_FSM_state(INIT),
-	m_internal_state(m_vertical_sub_group,m_horizontal_sub_group,p_init_value)
+	m_internal_state(m_vertical_sub_group,m_horizontal_sub_group,p_init_value),
+	m_activity_counter(1 + SIZE * SIZE * SIZE * SIZE)
 	  {
 	    print_name();
 	    std::cout << "Creation" << std::endl ;
@@ -52,10 +53,8 @@ namespace sudoku_systemc
 	    sensitive << m_clk.pos();
 	  }
 
-	bool is_value_set(void)const
-	{
-	  return m_internal_state.is_value_set();
-	}
+	bool is_value_set(void)const;
+	const typename sudoku_types<SIZE>::t_data_type & get_value(void)const;
 
 	sc_in<bool> m_clk;
 	sudoku_input_port<SIZE> m_input_port;
@@ -255,6 +254,17 @@ namespace sudoku_systemc
 													     m_input_port.m_cmd.read(),
 													     m_input_port.m_data.read());
 		  m_input_box.set_message(l_message);
+
+		  m_activity_counter = 1 + SIZE * SIZE * SIZE * SIZE;
+		}
+	      else
+		{
+		  --m_activity_counter;
+		  if(!m_activity_counter && !m_sc_stop_called)
+		    {
+		      m_sc_stop_called = true;
+		      sc_stop();
+		    }
 		}
 	    }
 	  else
@@ -363,7 +373,26 @@ namespace sudoku_systemc
 	sudoku_internal_state<SIZE> m_internal_state;
 	sudoku_message_box<SIZE> m_input_box;
 	sudoku_message_box<SIZE> m_output_box;
+	uint32_t m_activity_counter;
+	static bool m_sc_stop_called;
     };
+
+  //----------------------------------------------------------------------------
+  template<unsigned int SIZE>
+    const typename sudoku_types<SIZE>::t_data_type & sudoku_cell<SIZE>::get_value(void)const
+    {
+      return m_internal_state.get_value();
+    }
+  //----------------------------------------------------------------------------
+  template<unsigned int SIZE>
+    bool sudoku_cell<SIZE>::is_value_set(void)const
+	{
+	  return m_internal_state.is_value_set();
+	}
+
+  template<unsigned int SIZE>
+  bool sudoku_cell<SIZE>::m_sc_stop_called = false;
+
 }
 #endif // SUDOKU_CELL_H
 //EOF
