@@ -82,14 +82,8 @@ namespace sudoku_systemc
 	    }
 	}
 
-      //------------------------------------------------------------------------
-      bool is_cell_value_set(unsigned int p_x,unsigned int p_y)const
-      {
-	assert(p_x < SIZE * SIZE);
-	assert(p_y < SIZE * SIZE);
-	uint32_t l_id = p_x + p_y *SIZE *SIZE ; 
-	return m_cells2[l_id]->is_value_set();
-      }
+      bool is_cell_value_set(unsigned int p_x,unsigned int p_y)const;
+      const typename sudoku_types<SIZE>::t_data_type & get_cell_value(unsigned int p_x,unsigned int p_y)const;
 
       sc_in<bool> m_clk;
   private:
@@ -103,6 +97,24 @@ namespace sudoku_systemc
       sudoku_cell<SIZE> *m_cells2[SIZE*SIZE][SIZE*SIZE];
       sudoku_bus<SIZE> *m_buses[SIZE*SIZE*SIZE*SIZE];
   };
+
+  //------------------------------------------------------------------------
+  template<unsigned int SIZE>
+    bool sudoku<SIZE>::is_cell_value_set(unsigned int p_x,unsigned int p_y)const
+    {
+      assert(p_x < SIZE * SIZE);
+      assert(p_y < SIZE * SIZE);
+      return m_cells2[p_x][p_y]->is_value_set();
+    }
+
+  //----------------------------------------------------------------------------
+  template<unsigned int SIZE>
+    const typename sudoku_types<SIZE>::t_data_type & sudoku<SIZE>::get_cell_value(unsigned int p_x,unsigned int p_y)const
+    {
+      assert(p_x < SIZE * SIZE);
+      assert(p_y < SIZE * SIZE);
+      return m_cells2[p_x][p_y]->get_value();
+    }
 }
 #endif
 //EOF
