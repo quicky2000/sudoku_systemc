@@ -12,6 +12,8 @@
 #include "sudoku_internal_state.h"
 #include "sudoku_message_analyzer_if.h"
 
+#include "general_monitor.h"
+
 namespace sudoku_systemc
 {
   template<unsigned int SIZE>
@@ -34,7 +36,7 @@ namespace sudoku_systemc
       sudoku_output_port<SIZE> m_output_port;
     private:
       void print_name(void);
-
+      void delete_message(const sudoku_message_base<SIZE>* p_message);
       void treat_common(const sudoku_message_base<SIZE>* p_message);
       void treat(const sudoku_message_set_value<SIZE>* p_message);
       void treat(const sudoku_message_release_value<SIZE>* p_message);
@@ -56,6 +58,8 @@ namespace sudoku_systemc
 			      const typename sudoku_types<SIZE>::t_group_type & p_horizontal_group2,
 			      const typename sudoku_types<SIZE>::t_group_type & p_horizontal_sub_group2);
 
+      const uint32_t m_x;
+      const uint32_t m_y;
       const uint32_t m_id;
       const uint32_t m_vertical_group;
       const uint32_t m_vertical_sub_group;
@@ -73,11 +77,20 @@ namespace sudoku_systemc
 
   //----------------------------------------------------------------------------
   template<unsigned int SIZE>
+    void sudoku_cell<SIZE>::delete_message(const sudoku_message_base<SIZE>* p_message)
+    {
+      delete p_message;
+    }
+
+  //----------------------------------------------------------------------------
+  template<unsigned int SIZE>
     sudoku_cell<SIZE>::sudoku_cell(sc_module_name name,const uint32_t & p_x,const uint32_t & p_y,const uint32_t p_init_value):
     sc_module(name),
     m_clk("clk"),
     m_input_port("input_port"),
     m_output_port("output_port"),
+    m_x(p_x),
+    m_y(p_y),
     m_id(p_x + p_y *SIZE *SIZE),
     m_vertical_group((p_x /SIZE) % SIZE),
     m_vertical_sub_group(p_x % SIZE),
@@ -225,7 +238,7 @@ namespace sudoku_systemc
 	else
 	  {
 	    std::cout << "Delete my own SET_VALUE message" << std::endl ;
-	    delete p_message;
+	    delete_message(p_message);
 	  }
       }
 
@@ -244,7 +257,7 @@ namespace sudoku_systemc
         else
 	  {
 	    std::cout << "Delete my own RELEASE_VALUE message" << std::endl ;
-	    delete p_message;
+	    delete_message(p_message);
 	  }
       }
 
@@ -258,7 +271,7 @@ namespace sudoku_systemc
 	      {
 		print_name();
 		std::cout << "Hypothesis accepted !" << std::endl ;
-		//		exit(-1);
+                //                exit(-1);
 	      }
 	  }
         else if(m_internal_state.is_value_set())
@@ -276,7 +289,7 @@ namespace sudoku_systemc
                     m_message_to_forward = p_message;
                   }
                 else if(less_than_position(p_message->get_vertical_group(),p_message->get_vertical_sub_group(),p_message->get_horizontal_group(),p_message->get_horizontal_sub_group(),
-                                           m_vertical_group,m_vertical_sub_group,m_horizontal_group,m_horizontal_sub_group) < 0)
+                                           m_vertical_group,m_vertical_sub_group,m_horizontal_group,m_horizontal_sub_group))
                   {
                     print_name();
                     std::cout << "Forward higher position priority request" << std::endl ;
@@ -305,7 +318,10 @@ namespace sudoku_systemc
           {
             print_name();
             std::cout << "Delete REQ_HYPOTHESIS message" << std::endl ;
-            delete p_message;
+	    general_monitor::get_unique_instance()->pop_hypothesis(SIZE * p_message->get_vertical_group().to_uint() + p_message->get_vertical_sub_group().to_uint(),
+								   SIZE * p_message->get_horizontal_group().to_uint() + p_message->get_horizontal_sub_group().to_uint(),
+								   p_message->get_data().to_uint()+1);
+            delete_message(p_message);
           }
       }
 
@@ -348,6 +364,7 @@ namespace sudoku_systemc
 								  m_horizontal_sub_group,
 								  m_internal_state.get_nb_available_values().to_uint()-1
 								  );
+	      general_monitor::get_unique_instance()->push_hypothesis(m_x,m_y,m_internal_state.get_nb_available_values().to_uint());
               print_name();
               std::cout << "Send Hypothesis with value " << m_internal_state.get_nb_available_values().to_uint() << std::endl ;
               m_internal_state.hypothesis_sent(true);
@@ -405,10 +422,10 @@ namespace sudoku_systemc
 													   m_input_port.m_cmd.read(),
 													   m_input_port.m_data.read());
 		m_input_box.set_message(l_message);
-                if(l_message->get_cmd() == sudoku_message_base<SIZE>::SET_VALUE || l_message->get_cmd() == sudoku_message_base<SIZE>::RELEASE_VALUE)
-                  {
+                //          if(l_message->get_cmd() == sudoku_message_base<SIZE>::SET_VALUE || l_message->get_cmd() == sudoku_message_base<SIZE>::RELEASE_VALUE)
+                //                  {
                     m_activity_counter = 1 + SIZE * SIZE * SIZE * SIZE;
-                  }
+                    //                  }
 	      }
 	    else
 	      {
@@ -416,6 +433,7 @@ namespace sudoku_systemc
 		if(!m_activity_counter && !m_sc_stop_called)
 		  {
 		    m_sc_stop_called = true;
+		    general_monitor::get_unique_instance()->display();
 		    sc_stop();
 		  }
 	      }
@@ -451,7 +469,7 @@ namespace sudoku_systemc
 		m_output_port.m_horizontal_sub_group.write(l_message->get_horizontal_sub_group());
 		m_output_port.m_cmd.write(l_message->get_cmd());
 		m_output_port.m_data.write(l_message->get_data());
-		delete l_message;
+		delete_message(l_message);
 
 		// Indicate that message is ready to be sent
 		m_output_port.m_req.write(true);
