@@ -69,6 +69,8 @@ namespace sudoku_systemc
 		    << m_vertical_sub_group.to_uint() << "][" 
 		    << m_horizontal_group.to_uint() << "," 
 		    << m_horizontal_sub_group.to_uint() << "] : "
+		    << SIZE * m_vertical_group.to_uint() + m_vertical_sub_group.to_uint() << "_"
+		    << SIZE * m_horizontal_group.to_uint() + m_horizontal_sub_group.to_uint() << " "
 		    << sudoku_message_base<SIZE>::to_string(m_cmd) << "("
 		    << m_data.to_uint()+1 << ")" << std::endl ;
 	}
