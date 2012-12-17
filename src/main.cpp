@@ -191,6 +191,52 @@ int sc_main(int argc, char ** argv)
       l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(5,2),9));
       break;
     case 5:
+      // Single candidate
+      //  -------------
+      //  |1  |   |   |
+      //  |   |1  |   |
+      //  |   |   |1  |
+      //  -------------
+      //  | 1 |   |   |
+      //  |   | 1 |   |
+      //  |   |   | 1 |
+      //  -------------
+      //  |  1|   |   |
+      //  |   |  1|   |
+      //  |   |   |   |
+      //  -------------  
+      l_init_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(0,0),1));
+      l_init_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(3,1),1));
+      l_init_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(6,2),1));
+      l_init_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(1,3),1));
+      l_init_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(4,4),1));
+      l_init_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(7,5),1));
+      l_init_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(2,6),1));
+      l_init_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(5,7),1));
+      //  -------------
+      //  |1  |   |   |
+      //  |   |1  |   |
+      //  |   |   |1  |
+      //  -------------
+      //  | 1 |   |   |
+      //  |   | 1 |   |
+      //  |   |   | 1 |
+      //  -------------
+      //  |  1|   |   |
+      //  |   |  1|   |
+      //  |   |   |  1|
+      //  -------------  
+      l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(0,0),1));
+      l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(3,1),1));
+      l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(6,2),1));
+      l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(1,3),1));
+      l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(4,4),1));
+      l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(7,5),1));
+      l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(2,6),1));
+      l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(5,7),1));
+      l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(8,8),1));
+      break;
+    case 6:
       //EASY
       //  -------------
       //  |  6| 9 |2  |
@@ -347,52 +393,6 @@ int sc_main(int argc, char ** argv)
       l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(6,8),1));
       l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(7,8),7));
       l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(8,8),2));
-      break;
-    case 6:
-      // Single candidate
-      //  -------------
-      //  |1  |   |   |
-      //  |   |1  |   |
-      //  |   |   |1  |
-      //  -------------
-      //  | 1 |   |   |
-      //  |   | 1 |   |
-      //  |   |   | 1 |
-      //  -------------
-      //  |  1|   |   |
-      //  |   |  1|   |
-      //  |   |   |   |
-      //  -------------  
-      l_init_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(0,0),1));
-      l_init_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(3,1),1));
-      l_init_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(6,2),1));
-      l_init_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(1,3),1));
-      l_init_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(4,4),1));
-      l_init_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(7,5),1));
-      l_init_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(2,6),1));
-      l_init_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(5,7),1));
-      //  -------------
-      //  |1  |   |   |
-      //  |   |1  |   |
-      //  |   |   |1  |
-      //  -------------
-      //  | 1 |   |   |
-      //  |   | 1 |   |
-      //  |   |   | 1 |
-      //  -------------
-      //  |  1|   |   |
-      //  |   |  1|   |
-      //  |   |   |  1|
-      //  -------------  
-      l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(0,0),1));
-      l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(3,1),1));
-      l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(6,2),1));
-      l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(1,3),1));
-      l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(4,4),1));
-      l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(7,5),1));
-      l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(2,6),1));
-      l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(5,7),1));
-      l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(8,8),1));
       break;
     case 7:
       //Medium Genina
