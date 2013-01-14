@@ -13,7 +13,7 @@ namespace sudoku_systemc
     {
     public:
 
-      typedef enum {SET_VALUE,RELEASE_VALUE,REQ_HYP,SET_HYP_LEVEL,INVALID_STATE} t_cmd_message;
+      typedef enum {SET_VALUE,RELEASE_VALUE,CHECK,REQ_HYP,SET_HYP_LEVEL,INVALID_STATE} t_cmd_message;
 
       virtual void be_treated(sudoku_message_analyser_if<SIZE> * p_analyser)const=0;
 
@@ -83,6 +83,8 @@ namespace sudoku_systemc
 		return "SET_VALUE";
 	      case RELEASE_VALUE:
 		return "RELEASE_VALUE";
+	      case CHECK:
+		return "CHECK";
 	      case REQ_HYP:
 		return "REQ_HYP";
 	      case SET_HYP_LEVEL:

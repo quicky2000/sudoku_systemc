@@ -3,7 +3,9 @@
 
 #include "sudoku_message_set_value.h"
 #include "sudoku_message_release_value.h"
+#include "sudoku_message_check.h"
 #include "sudoku_message_req_hypothesis.h"
+#include "sudoku_message_set_hyp_level.h"
 
 namespace sudoku_systemc
 {
@@ -44,7 +46,19 @@ namespace sudoku_systemc
 								 p_horizontal_sub_group,
 								 p_data);
 	      break;
+	    case sudoku_message_base<SIZE>::CHECK:
+	      l_result = new sudoku_message_check<SIZE>(p_vertical_group,
+							p_vertical_sub_group,
+							p_horizontal_group,
+							p_horizontal_sub_group,
+							p_data);
+	      break;
 	    case sudoku_message_base<SIZE>::SET_HYP_LEVEL:
+	      l_result = new sudoku_message_set_hyp_level<SIZE>(p_vertical_group,
+								p_vertical_sub_group,
+								p_horizontal_group,
+								p_horizontal_sub_group,
+								p_data);
 	      break;
 	    case sudoku_message_base<SIZE>::INVALID_STATE:
 	      break;

@@ -39,8 +39,10 @@ namespace sudoku_systemc
       void delete_message(const sudoku_message_base<SIZE>* p_message);
       void treat_common(const sudoku_message_base<SIZE>* p_message);
       void treat(const sudoku_message_set_value<SIZE>* p_message);
+      void treat(const sudoku_message_check<SIZE>* p_message);
       void treat(const sudoku_message_release_value<SIZE>* p_message);
       void treat(const sudoku_message_req_hypothesis<SIZE>* p_message);
+      void treat(const sudoku_message_set_hyp_level<SIZE>* p_message);
  
       inline bool is_mine(const sudoku_message_base<SIZE> * const p_message)const;
       inline const sudoku_message_base<SIZE> * const generate_message_to_send(void);
@@ -215,6 +217,12 @@ namespace sudoku_systemc
 	  {
 	    m_internal_state.remove_square_candidate(p_message->get_data());
 	  }
+	if(m_internal_state.is_check_sent())
+	  {
+	    print_name();
+	    std::cout << "Discard CHECK I have sent" << std::endl ;
+	    m_internal_state.invalid_check();
+	  }
       }
     //----------------------------------------------------------------------------
     template<unsigned int SIZE>
@@ -244,6 +252,52 @@ namespace sudoku_systemc
 
     //----------------------------------------------------------------------------
     template<unsigned int SIZE>
+      void sudoku_cell<SIZE>::treat(const sudoku_message_check<SIZE>* p_message)
+      {
+	if(!is_mine(p_message))
+	  {
+	    // Forwarding of check message is mandatory but I must invalidate it if I`m not in hypothesis mode
+	    if((!m_internal_state.is_value_set() || !m_internal_state.is_value_sent() ) &&  m_internal_state.get_values_to_release().to_uint() > 0)
+	      {
+		print_name();
+		std::cout << "Invalidate received check message" << std::endl ;
+		m_message_to_forward = new sudoku_message_check<SIZE>(p_message->get_vertical_group(),
+								      p_message->get_vertical_sub_group(),
+								      p_message->get_horizontal_group(),
+								      p_message->get_horizontal_sub_group(),
+								      p_message->get_data() & 0x0
+								      );
+		delete p_message;
+	      }
+	    else
+	      {
+		m_message_to_forward = p_message;
+	      }
+	  }
+	else // This is my check message. Test if its content is still valid and if it has not been invalidated by myself
+	  {
+	    if(p_message->is_valid() && m_internal_state.is_check_valid())
+	      {
+		print_name();
+		std::cout << "Check granted !!" << std::endl ;
+		m_internal_state.set_check_granted();
+	      }
+	    else
+	      {
+		print_name();
+		std::cout << "Hypothesis discarded by CHECK process" << std::endl ;
+		m_internal_state.set_hypothesis_accepted(false);
+		m_internal_state.set_hypothesis_returned(false);
+	      }
+	    m_internal_state.hypothesis_sent(false);
+	    m_internal_state.set_check_sent(false);
+	    std::cout << "Delete my own CHECK message" << std::endl ;
+	    delete_message(p_message);
+	  }
+      }
+
+    //----------------------------------------------------------------------------
+    template<unsigned int SIZE>
       void sudoku_cell<SIZE>::treat(const sudoku_message_release_value<SIZE>* p_message)
       {
         if(!is_mine(p_message))
@@ -267,11 +321,21 @@ namespace sudoku_systemc
       {
 	if(is_mine(p_message))
 	  {
-	    if(!m_internal_state.is_value_set())
+	    if(!m_internal_state.is_value_set() && !m_internal_state.is_hypothesis_accepted())
 	      {
-		print_name();
-		std::cout << "Hypothesis accepted !" << std::endl ;
-                //                exit(-1);
+		if(m_internal_state.is_check_granted())
+		  {
+		    print_name();
+		    std::cout << "Hypothesis accepted !" << std::endl ;
+		    m_internal_state.set_hypothesis_accepted(true);
+		    exit(-1);
+		  }
+		else
+		  {
+		    print_name();
+		    std::cout << "Hypothsis returned" << std::endl ;
+		    m_internal_state.set_hypothesis_returned(true);
+		  }
 	      }
 	  }
         else if(m_internal_state.is_value_set())
@@ -327,6 +391,28 @@ namespace sudoku_systemc
 
     //----------------------------------------------------------------------------
     template<unsigned int SIZE>
+      void sudoku_cell<SIZE>::treat(const sudoku_message_set_hyp_level<SIZE> * p_message)
+      {
+	if(!is_mine(p_message))
+	  {
+	    m_message_to_forward = p_message;
+	  }
+	else
+	  {
+	    std::cout << "New Hypothesis level has been set" << std::endl ;
+	    exit(-1);
+	  }
+        if(m_message_to_forward != p_message)
+          {
+            print_name();
+            std::cout << "Delete SET_HYP_LEVEL message" << std::endl ;
+            delete_message(p_message);
+          }
+      }
+
+
+    //----------------------------------------------------------------------------
+    template<unsigned int SIZE>
       const sudoku_message_base<SIZE> * const sudoku_cell<SIZE>::generate_message_to_send(void)
         {
           const sudoku_message_base<SIZE> * l_message = NULL;
@@ -355,7 +441,7 @@ namespace sudoku_systemc
                                                                  m_internal_state.get_remaining_value()
                                                                  );
             }
-          else if(!m_internal_state.is_value_set() && !m_internal_state.is_hypothesis_sent() && m_internal_state.get_nb_available_values() != sudoku_configuration<SIZE>::m_nb_value)
+          else if(!m_internal_state.is_value_set() && !m_internal_state.is_hypothesis_sent() && m_internal_state.get_nb_available_values() != sudoku_configuration<SIZE>::m_nb_value && !m_internal_state.is_check_sent())
             {
               // Request for hypothesis
 	      l_message = new sudoku_message_req_hypothesis<SIZE>(m_vertical_group,
@@ -369,6 +455,28 @@ namespace sudoku_systemc
               std::cout << "Send Hypothesis with value " << m_internal_state.get_nb_available_values().to_uint() << std::endl ;
               m_internal_state.hypothesis_sent(true);
             }
+	  else if(m_internal_state.is_hypothesis_returned() && !m_internal_state.is_check_sent() && !m_internal_state.is_check_granted())
+	    {
+              print_name();
+              std::cout << "Send Check" << std::endl ;
+	      l_message = new sudoku_message_check<SIZE>(m_vertical_group,
+							 m_vertical_sub_group,
+							 m_horizontal_group,
+							 m_horizontal_sub_group,
+							 0x1
+							 );
+	      m_internal_state.set_check_sent(true);
+	    }
+	  else if(m_internal_state.is_hypothesis_accepted() && !m_internal_state.is_new_level_sent())
+	    {
+	      m_internal_state.set_new_level_sent(true);
+	      l_message = new sudoku_message_set_hyp_level<SIZE>(m_vertical_group,
+                                                                 m_vertical_sub_group,
+                                                                 m_horizontal_group,
+                                                                 m_horizontal_sub_group,
+                                                                 0 // TO BE REFINED
+                                                                 );
+	    }
           return l_message;
         }
 
