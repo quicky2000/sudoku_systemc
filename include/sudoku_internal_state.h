@@ -10,6 +10,7 @@ namespace sudoku_systemc
     {
     public:
       sudoku_internal_state(const unsigned int & p_sub_x,const unsigned int & p_sub_y,const unsigned int & p_initial_value);
+      sudoku_internal_state(const sudoku_internal_state<SIZE> & p_initial_state,const unsigned int & p_hypothesis_level);
 
       unsigned int get_real_value(const typename sudoku_types<SIZE>::t_data_type & p_value)const;
       void remove_vertical_candidate(const typename sudoku_types<SIZE>::t_data_type & p_value);
@@ -17,6 +18,7 @@ namespace sudoku_systemc
       void remove_square_candidate(const typename sudoku_types<SIZE>::t_data_type & p_value);
       void remove_available_value(const typename sudoku_types<SIZE>::t_data_type & p_value);
       const typename sudoku_types<SIZE>::t_nb_available_values & get_nb_available_values(void)const;
+      const typename sudoku_types<SIZE>::t_data_type make_hypothesis(void);
       const typename sudoku_types<SIZE>::t_available_values & get_values_to_release(void)const;
       const typename sudoku_types<SIZE>::t_data_type get_remaining_value(void);
 
@@ -46,7 +48,7 @@ namespace sudoku_systemc
       inline void set_new_level_sent(bool p_sent);
       inline const bool is_new_level_sent(void)const;
       const unsigned int & get_hypothesis_level(void)const;
-
+      bool is_modified(void)const ;
     private:
       void set_value(const typename sudoku_types<SIZE>::t_data_type & p_value);
 
@@ -73,7 +75,67 @@ namespace sudoku_systemc
 
       bool m_set_new_level_sent;
       unsigned int m_hypothesis_level;
+      bool m_modified;
+
     };
+
+  //----------------------------------------------------------------------------
+  template<unsigned int SIZE> 
+    sudoku_internal_state<SIZE>::sudoku_internal_state(const unsigned int & p_sub_x,const unsigned int & p_sub_y,const unsigned int & p_initial_value=0):
+    m_available_values((1 << sudoku_configuration<SIZE>::m_nb_value) -1),
+    m_nb_available_values(p_initial_value != 0 ? 1 : sudoku_configuration<SIZE>::m_nb_value),
+    m_values_to_release(0),
+    m_value(0),
+    m_value_set(false),
+    m_value_sent(false),
+    m_check_sent(false),
+    m_valid_check(true),
+    m_check_granted(false),
+    m_hypothesis_sent(false),
+    m_hypothesis_accepted(false),
+    m_hypothesis_returned(false),
+    m_set_new_level_sent(false),
+    m_hypothesis_level(0),
+    m_modified(false)
+      {
+	for(uint32_t l_index = 0 ; l_index < sudoku_configuration<SIZE>::m_nb_value; ++l_index)
+	  {
+	    m_vertical_candidates[l_index] = sudoku_configuration<SIZE>::m_nb_value - 1;
+	    m_horizontal_candidates[l_index] = sudoku_configuration<SIZE>::m_nb_value - 1;
+	    m_square_candidates[l_index] = sudoku_configuration<SIZE>::m_nb_value - 1;
+	  }
+	if(p_initial_value)
+	  {
+	    set_value(p_initial_value-1);
+	  }
+      }
+
+  //----------------------------------------------------------------------------
+  template<unsigned int SIZE> 
+    sudoku_internal_state<SIZE>::sudoku_internal_state(const sudoku_internal_state<SIZE> & p_initial_state,const unsigned int & p_hypothesis_level):
+    m_available_values(p_initial_state.m_available_values),
+    m_nb_available_values(p_initial_state.m_nb_available_values),
+    m_values_to_release(p_initial_state.m_values_to_release),
+    m_value(p_initial_state.m_value),
+    m_value_set(p_initial_state.m_value_set),
+    m_value_sent(false),
+    m_check_sent(false),
+    m_valid_check(true),
+    m_check_granted(false),
+    m_hypothesis_sent(true),
+    m_hypothesis_accepted(false),
+    m_hypothesis_returned(false),
+    m_set_new_level_sent(false),
+    m_hypothesis_level(p_hypothesis_level),
+    m_modified(false)
+    {
+	for(uint32_t l_index = 0 ; l_index < sudoku_configuration<SIZE>::m_nb_value; ++l_index)
+	  {
+	    m_vertical_candidates[l_index] = p_initial_state.m_vertical_candidates[l_index];
+	    m_horizontal_candidates[l_index] = p_initial_state.m_horizontal_candidates[l_index];
+	    m_square_candidates[l_index] = p_initial_state.m_square_candidates[l_index];
+	  }
+    }
 
   //----------------------------------------------------------------------------
   template<unsigned int SIZE> 
@@ -99,6 +161,7 @@ namespace sudoku_systemc
 	{
 	  m_check_granted = false;
 	}
+	m_modified = true;
     }
   //----------------------------------------------------------------------------
   template<unsigned int SIZE> 
@@ -112,6 +175,7 @@ namespace sudoku_systemc
     void sudoku_internal_state<SIZE>::invalid_check(void)
     {
       m_valid_check = false;
+	m_modified = true;
     }
   //----------------------------------------------------------------------------
   template<unsigned int SIZE> 
@@ -124,6 +188,7 @@ namespace sudoku_systemc
     void sudoku_internal_state<SIZE>::set_check_granted(void)
     {
       m_check_granted = true;
+	m_modified = true;
     }
   //----------------------------------------------------------------------------
   template<unsigned int SIZE> 
@@ -133,35 +198,6 @@ namespace sudoku_systemc
     }
 
 
-  //----------------------------------------------------------------------------
-  template<unsigned int SIZE> 
-    sudoku_internal_state<SIZE>::sudoku_internal_state(const unsigned int & p_sub_x,const unsigned int & p_sub_y,const unsigned int & p_initial_value=0):
-    m_available_values((1 << sudoku_configuration<SIZE>::m_nb_value) -1),
-    m_nb_available_values(p_initial_value != 0 ? 1 : sudoku_configuration<SIZE>::m_nb_value),
-    m_values_to_release(0),
-    m_value(0),
-    m_value_set(false),
-    m_value_sent(false),
-    m_check_sent(false),
-    m_valid_check(true),
-    m_check_granted(false),
-    m_hypothesis_sent(false),
-    m_hypothesis_accepted(false),
-    m_hypothesis_returned(false),
-    m_set_new_level_sent(false),
-    m_hypothesis_level(0)
-      {
-	for(uint32_t l_index = 0 ; l_index < sudoku_configuration<SIZE>::m_nb_value; ++l_index)
-	  {
-	    m_vertical_candidates[l_index] = sudoku_configuration<SIZE>::m_nb_value - 1;
-	    m_horizontal_candidates[l_index] = sudoku_configuration<SIZE>::m_nb_value - 1;
-	    m_square_candidates[l_index] = sudoku_configuration<SIZE>::m_nb_value - 1;
-	  }
-	if(p_initial_value)
-	  {
-	    set_value(p_initial_value-1);
-	  }
-      }
     //----------------------------------------------------------------------------
     template<unsigned int SIZE> 
       void sudoku_internal_state<SIZE>::remove_vertical_candidate(const typename sudoku_types<SIZE>::t_data_type & p_value)
@@ -173,6 +209,7 @@ namespace sudoku_systemc
 	  {
 	    set_value(p_value);
 	  }
+	m_modified = true;
       }
 
     //----------------------------------------------------------------------------
@@ -186,6 +223,7 @@ namespace sudoku_systemc
 	  {
 	    set_value(p_value);
 	  }
+	m_modified = true;
       }
 
     //----------------------------------------------------------------------------
@@ -199,6 +237,7 @@ namespace sudoku_systemc
 	  {
 	    set_value(p_value);
 	  }
+	m_modified = true;
       }
 
     //----------------------------------------------------------------------------
@@ -225,8 +264,22 @@ namespace sudoku_systemc
 		set_value(l_index);
 		assert(m_available_values == 0);
 		assert(m_nb_available_values == 0);
+		m_modified = true;
 	      }
 	  }
+      }
+
+    //----------------------------------------------------------------------------
+    template<unsigned int SIZE> 
+      const typename sudoku_types<SIZE>::t_data_type sudoku_internal_state<SIZE>::make_hypothesis(void)
+      {
+	typename sudoku_types<SIZE>::t_data_type l_index = sudoku_configuration<SIZE>::m_nb_value - 1;
+	while(m_available_values[l_index.to_uint()]==false)
+	  {
+	    l_index = l_index.to_uint()-1;
+	  }
+	set_value(l_index);
+	return l_index;
       }
 
     //----------------------------------------------------------------------------
@@ -268,6 +321,7 @@ namespace sudoku_systemc
       void sudoku_internal_state<SIZE>::value_sent(bool p_sent)
       {
 	m_value_sent = p_sent;
+	m_modified = true;
       }
 
     //----------------------------------------------------------------------------
@@ -282,6 +336,7 @@ namespace sudoku_systemc
       void sudoku_internal_state<SIZE>::hypothesis_sent(bool p_value)
       {
 	m_hypothesis_sent = p_value;
+	m_modified = true;
       }
 
     //----------------------------------------------------------------------------
@@ -296,6 +351,7 @@ namespace sudoku_systemc
     void sudoku_internal_state<SIZE>::set_hypothesis_accepted(bool p_accepted)
       {
 	m_hypothesis_accepted = p_accepted;
+	m_modified = true;
       }
 
     //----------------------------------------------------------------------------
@@ -317,6 +373,7 @@ namespace sudoku_systemc
       void sudoku_internal_state<SIZE>::set_new_level_sent(bool p_sent)
       {
 	m_set_new_level_sent = p_sent;
+	m_modified = true;
       }
 
     //----------------------------------------------------------------------------
@@ -335,6 +392,13 @@ namespace sudoku_systemc
 
     //----------------------------------------------------------------------------
     template<unsigned int SIZE> 
+      bool sudoku_internal_state<SIZE>::is_modified(void)const
+      {
+	return m_modified;
+      }
+
+    //----------------------------------------------------------------------------
+    template<unsigned int SIZE> 
       void sudoku_internal_state<SIZE>::set_value(const typename sudoku_types<SIZE>::t_data_type & p_value)
       {
 	assert(!m_value_set);
@@ -346,6 +410,7 @@ namespace sudoku_systemc
 	m_available_values[p_value.to_uint()] = false;
 	m_nb_available_values = m_nb_available_values.to_uint() - 1;
 	m_values_to_release |= m_available_values;
+	m_modified = true;
       }
 
     //----------------------------------------------------------------------------

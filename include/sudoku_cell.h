@@ -68,12 +68,14 @@ namespace sudoku_systemc
       const uint32_t m_horizontal_group;
       const uint32_t m_horizontal_sub_group;
       t_internal_FSM_state m_internal_FSM_state;
-      sudoku_internal_state<SIZE> m_internal_state;
+      //TO DELETEsudoku_internal_state<SIZE> m_internal_state;
+      sudoku_internal_state<SIZE> * m_internal_states[SIZE];
       sudoku_message_box<SIZE> m_input_box;
       sudoku_message_box<SIZE> m_output_box;
       uint32_t m_activity_counter;
       const sudoku_message_base<SIZE> * m_message_to_forward;
-
+      unsigned int m_hypothesis_level;
+      unsigned int m_nb_state;
       static bool m_sc_stop_called;
     };
 
@@ -99,9 +101,11 @@ namespace sudoku_systemc
     m_horizontal_group((p_y /SIZE) % SIZE),
     m_horizontal_sub_group(p_y % SIZE),
     m_internal_FSM_state(INIT),
-    m_internal_state(m_vertical_sub_group,m_horizontal_sub_group,p_init_value),
+    //TO DELETE    m_internal_state(m_vertical_sub_group,m_horizontal_sub_group,p_init_value),
     m_activity_counter(1 + SIZE * SIZE * SIZE * SIZE),
-    m_message_to_forward(NULL)
+    m_message_to_forward(NULL),
+    m_hypothesis_level(0),
+    m_nb_state(0)
       {
 	print_name();
 	std::cout << "Creation" << std::endl ;
@@ -116,19 +120,25 @@ namespace sudoku_systemc
         
 	SC_THREAD(run);
 	sensitive << m_clk.pos();
+
+	m_internal_states[0] = new sudoku_internal_state<SIZE>(m_vertical_sub_group,m_horizontal_sub_group,p_init_value);
+	for(unsigned int l_index = 1; l_index < SIZE ; ++l_index)
+	  {
+	    m_internal_states[l_index] = NULL;
+	  }
       }
 
     //----------------------------------------------------------------------------
     template<unsigned int SIZE>
       const typename sudoku_types<SIZE>::t_data_type & sudoku_cell<SIZE>::get_value(void)const
       {
-	return m_internal_state.get_value();
+	return /*m_internal_state*/m_internal_states[m_nb_state]->get_value();
       }
     //----------------------------------------------------------------------------
     template<unsigned int SIZE>
       bool sudoku_cell<SIZE>::is_value_set(void)const
       {
-	return m_internal_state.is_value_set();
+	return /*m_internal_state*/m_internal_states[m_nb_state]->is_value_set();
       }
 
     //----------------------------------------------------------------------------
@@ -207,21 +217,21 @@ namespace sudoku_systemc
       {
 	if(p_message->get_vertical_group() == m_vertical_group && p_message->get_vertical_sub_group() == m_vertical_sub_group)
 	  {
-	    m_internal_state.remove_vertical_candidate(p_message->get_data());
+	    /*m_internal_state*/m_internal_states[m_nb_state]->remove_vertical_candidate(p_message->get_data());
 	  }
 	if(p_message->get_horizontal_group() == m_horizontal_group && p_message->get_horizontal_sub_group() == m_horizontal_sub_group)
 	  {
-	    m_internal_state.remove_horizontal_candidate(p_message->get_data());
+	    /*m_internal_state*/m_internal_states[m_nb_state]->remove_horizontal_candidate(p_message->get_data());
 	  }
 	if(p_message->get_vertical_group() == m_vertical_group && p_message->get_horizontal_group() == m_horizontal_group)
 	  {
-	    m_internal_state.remove_square_candidate(p_message->get_data());
+	    /*m_internal_state*/m_internal_states[m_nb_state]->remove_square_candidate(p_message->get_data());
 	  }
-	if(m_internal_state.is_check_sent())
+	if(/*m_internal_state*/m_internal_states[m_nb_state]->is_check_sent())
 	  {
 	    print_name();
 	    std::cout << "Discard CHECK I have sent" << std::endl ;
-	    m_internal_state.invalid_check();
+	    /*m_internal_state*/m_internal_states[m_nb_state]->invalid_check();
 	  }
       }
     //----------------------------------------------------------------------------
@@ -230,18 +240,28 @@ namespace sudoku_systemc
       {
 	if(!is_mine(p_message))
 	  {
-            if(!m_internal_state.is_value_set())
+            if(!/*m_internal_state*/m_internal_states[m_nb_state]->is_value_set())
               {
                 if((p_message->get_vertical_group() == m_vertical_group && p_message->get_vertical_sub_group() == m_vertical_sub_group) ||
                    (p_message->get_horizontal_group() == m_horizontal_group && p_message->get_horizontal_sub_group() == m_horizontal_sub_group) || 
                    (p_message->get_vertical_group() == m_vertical_group && p_message->get_horizontal_group() == m_horizontal_group))
                   {
-                    m_internal_state.remove_available_value(p_message->get_data());
+                    /*m_internal_state*/m_internal_states[m_nb_state]->remove_available_value(p_message->get_data());
                   }
                 treat_common(p_message);
               }
-            m_message_to_forward = p_message;
-            m_internal_state.hypothesis_sent(false);
+            else if((p_message->get_vertical_group() == m_vertical_group && p_message->get_vertical_sub_group() == m_vertical_sub_group) ||
+                   (p_message->get_horizontal_group() == m_horizontal_group && p_message->get_horizontal_sub_group() == m_horizontal_sub_group) || 
+                   (p_message->get_vertical_group() == m_vertical_group && p_message->get_horizontal_group() == m_horizontal_group))
+              {
+                if(p_message->get_data() == m_internal_states[m_nb_state]->get_value())
+                  {
+		    assert(false);
+                    sc_stop();
+                  }
+              }
+                m_message_to_forward = p_message;
+            /*m_internal_state*/m_internal_states[m_nb_state]->hypothesis_sent(false);
 	  }
 	else
 	  {
@@ -257,7 +277,7 @@ namespace sudoku_systemc
 	if(!is_mine(p_message))
 	  {
 	    // Forwarding of check message is mandatory but I must invalidate it if I`m not in hypothesis mode
-	    if((!m_internal_state.is_value_set() || !m_internal_state.is_value_sent() ) &&  m_internal_state.get_values_to_release().to_uint() > 0)
+	    if((!/*m_internal_state*/m_internal_states[m_nb_state]->is_value_set() || !/*m_internal_state*/m_internal_states[m_nb_state]->is_value_sent() ) &&  /*m_internal_state*/m_internal_states[m_nb_state]->get_values_to_release().to_uint() > 0)
 	      {
 		print_name();
 		std::cout << "Invalidate received check message" << std::endl ;
@@ -276,21 +296,21 @@ namespace sudoku_systemc
 	  }
 	else // This is my check message. Test if its content is still valid and if it has not been invalidated by myself
 	  {
-	    if(p_message->is_valid() && m_internal_state.is_check_valid())
+	    if(p_message->is_valid() && /*m_internal_state*/m_internal_states[m_nb_state]->is_check_valid())
 	      {
 		print_name();
 		std::cout << "Check granted !!" << std::endl ;
-		m_internal_state.set_check_granted();
+		/*m_internal_state*/m_internal_states[m_nb_state]->set_check_granted();
 	      }
 	    else
 	      {
 		print_name();
 		std::cout << "Hypothesis discarded by CHECK process" << std::endl ;
-		m_internal_state.set_hypothesis_accepted(false);
-		m_internal_state.set_hypothesis_returned(false);
+		/*m_internal_state*/m_internal_states[m_nb_state]->set_hypothesis_accepted(false);
+		/*m_internal_state*/m_internal_states[m_nb_state]->set_hypothesis_returned(false);
 	      }
-	    m_internal_state.hypothesis_sent(false);
-	    m_internal_state.set_check_sent(false);
+	    /*m_internal_state*/m_internal_states[m_nb_state]->hypothesis_sent(false);
+	    /*m_internal_state*/m_internal_states[m_nb_state]->set_check_sent(false);
 	    std::cout << "Delete my own CHECK message" << std::endl ;
 	    delete_message(p_message);
 	  }
@@ -302,7 +322,7 @@ namespace sudoku_systemc
       {
         if(!is_mine(p_message))
           {
-            if(!m_internal_state.is_value_set())
+            if(!/*m_internal_state*/m_internal_states[m_nb_state]->is_value_set())
               {
                 treat_common(p_message);
               }
@@ -321,35 +341,34 @@ namespace sudoku_systemc
       {
 	if(is_mine(p_message))
 	  {
-	    if(!m_internal_state.is_value_set() && !m_internal_state.is_hypothesis_accepted())
+	    if(!/*m_internal_state*/m_internal_states[m_nb_state]->is_value_set() && !/*m_internal_state*/m_internal_states[m_nb_state]->is_hypothesis_accepted())
 	      {
-		if(m_internal_state.is_check_granted())
+		if(/*m_internal_state*/m_internal_states[m_nb_state]->is_check_granted())
 		  {
 		    print_name();
 		    std::cout << "Hypothesis accepted !" << std::endl ;
-		    m_internal_state.set_hypothesis_accepted(true);
-		    exit(-1);
+		    /*m_internal_state*/m_internal_states[m_nb_state]->set_hypothesis_accepted(true);
 		  }
 		else
 		  {
 		    print_name();
 		    std::cout << "Hypothsis returned" << std::endl ;
-		    m_internal_state.set_hypothesis_returned(true);
+		    /*m_internal_state*/m_internal_states[m_nb_state]->set_hypothesis_returned(true);
 		  }
 	      }
 	  }
-        else if(m_internal_state.is_value_set())
+        else if(/*m_internal_state*/m_internal_states[m_nb_state]->is_value_set())
           {
             m_message_to_forward = p_message;
           }
-	else if(m_internal_state.is_hypothesis_sent())
+	else if(/*m_internal_state*/m_internal_states[m_nb_state]->is_hypothesis_sent())
           {
-            if(m_internal_state.get_nb_available_values().to_uint() >= p_message->get_data().to_uint()+1)
+            if(/*m_internal_state*/m_internal_states[m_nb_state]->get_nb_available_values().to_uint() >= p_message->get_data().to_uint()+1)
               {
-                if(m_internal_state.get_nb_available_values().to_uint() > p_message->get_data().to_uint()+1)
+                if(/*m_internal_state*/m_internal_states[m_nb_state]->get_nb_available_values().to_uint() > p_message->get_data().to_uint()+1)
                   {
                     print_name();
-                    std::cout << "Forward stronger hypothesis request : " << m_internal_state.get_nb_available_values().to_uint() << " > " << p_message->get_data().to_uint()+1 << std::endl ;
+                    std::cout << "Forward stronger hypothesis request : " << /*m_internal_state*/m_internal_states[m_nb_state]->get_nb_available_values().to_uint() << " > " << p_message->get_data().to_uint()+1 << std::endl ;
                     m_message_to_forward = p_message;
                   }
                 else if(less_than_position(p_message->get_vertical_group(),p_message->get_vertical_sub_group(),p_message->get_horizontal_group(),p_message->get_horizontal_sub_group(),
@@ -363,14 +382,14 @@ namespace sudoku_systemc
                   {
                     print_name();
                     std::cout << "Discard hypothesis due to lower position priority" << std::endl ;
-                    m_internal_state.hypothesis_sent(false);
+                    /*m_internal_state*/m_internal_states[m_nb_state]->hypothesis_sent(false);
                   }
               }
             else
               {
                 print_name();
-                std::cout << "Discard weak hypothesis request : " << m_internal_state.get_nb_available_values().to_uint() << " < " << p_message->get_data().to_uint()+1 << std::endl ;
-                m_internal_state.hypothesis_sent(false);
+                std::cout << "Discard weak hypothesis request : " << /*m_internal_state*/m_internal_states[m_nb_state]->get_nb_available_values().to_uint() << " < " << p_message->get_data().to_uint()+1 << std::endl ;
+                /*m_internal_state*/m_internal_states[m_nb_state]->hypothesis_sent(false);
               }
           }
         else
@@ -393,14 +412,33 @@ namespace sudoku_systemc
     template<unsigned int SIZE>
       void sudoku_cell<SIZE>::treat(const sudoku_message_set_hyp_level<SIZE> * p_message)
       {
-	if(!is_mine(p_message))
+	if(!/*m_internal_state*/m_internal_states[m_nb_state]->is_value_set())
 	  {
-	    m_message_to_forward = p_message;
+	    if(!is_mine(p_message))
+	      {
+		m_message_to_forward = p_message;
+	      }
+	    else
+	      {
+		typename sudoku_types<SIZE>::t_data_type l_hypothesis = /*m_internal_state*/m_internal_states[m_nb_state]->make_hypothesis();
+		print_name();
+		std::cout << "New Hypothesis level has been set" << std::endl ;
+		std::cout << "Make hypothesis with value " <<  m_internal_states[m_nb_state]->get_real_value(l_hypothesis) << std::endl ;
+		//		exit(-1);
+	      }
+	    ++m_hypothesis_level;
+	    assert(m_hypothesis_level < SIZE);
+	    print_name();
+	    std::cout << "Switching to new hypothesis level " << m_hypothesis_level << std::endl ;
+	    if(/*m_internal_state*/m_internal_states[m_nb_state]->is_modified())
+	      {
+		++m_nb_state;
+		m_internal_states[m_nb_state] = new sudoku_internal_state<SIZE>(*(m_internal_states[m_nb_state - 1]),m_hypothesis_level);
+	      }
 	  }
 	else
 	  {
-	    std::cout << "New Hypothesis level has been set" << std::endl ;
-	    exit(-1);
+	    m_message_to_forward = p_message;
 	  }
         if(m_message_to_forward != p_message)
           {
@@ -422,40 +460,40 @@ namespace sudoku_systemc
               l_message = m_message_to_forward;
               m_message_to_forward = NULL;
             }
-          else if(m_internal_state.is_value_set() && !m_internal_state.is_value_sent())
+          else if(/*m_internal_state*/m_internal_states[m_nb_state]->is_value_set() && !/*m_internal_state*/m_internal_states[m_nb_state]->is_value_sent())
             {
               l_message = new sudoku_message_set_value<SIZE>(m_vertical_group,
                                                              m_vertical_sub_group,
                                                              m_horizontal_group,
                                                              m_horizontal_sub_group,
-                                                             m_internal_state.get_value()
+                                                             /*m_internal_state*/m_internal_states[m_nb_state]->get_value()
                                                              );
-              m_internal_state.value_sent(true);
+              /*m_internal_state*/m_internal_states[m_nb_state]->value_sent(true);
             }
-          else if(m_internal_state.get_values_to_release().to_uint() > 0)
+          else if(/*m_internal_state*/m_internal_states[m_nb_state]->get_values_to_release().to_uint() > 0)
             {
               l_message = new sudoku_message_release_value<SIZE>(m_vertical_group,
                                                                  m_vertical_sub_group,
                                                                  m_horizontal_group,
                                                                  m_horizontal_sub_group,
-                                                                 m_internal_state.get_remaining_value()
+                                                                 /*m_internal_state*/m_internal_states[m_nb_state]->get_remaining_value()
                                                                  );
             }
-          else if(!m_internal_state.is_value_set() && !m_internal_state.is_hypothesis_sent() && m_internal_state.get_nb_available_values() != sudoku_configuration<SIZE>::m_nb_value && !m_internal_state.is_check_sent())
+          else if(!/*m_internal_state*/m_internal_states[m_nb_state]->is_value_set() && !/*m_internal_state*/m_internal_states[m_nb_state]->is_hypothesis_sent() && /*m_internal_state*/m_internal_states[m_nb_state]->get_nb_available_values() != sudoku_configuration<SIZE>::m_nb_value && !/*m_internal_state*/m_internal_states[m_nb_state]->is_check_sent())
             {
               // Request for hypothesis
 	      l_message = new sudoku_message_req_hypothesis<SIZE>(m_vertical_group,
 								  m_vertical_sub_group,
 								  m_horizontal_group,
 								  m_horizontal_sub_group,
-								  m_internal_state.get_nb_available_values().to_uint()-1
+								  /*m_internal_state*/m_internal_states[m_nb_state]->get_nb_available_values().to_uint()-1
 								  );
-	      general_monitor::get_unique_instance()->push_hypothesis(m_x,m_y,m_internal_state.get_nb_available_values().to_uint());
+	      general_monitor::get_unique_instance()->push_hypothesis(m_x,m_y,/*m_internal_state*/m_internal_states[m_nb_state]->get_nb_available_values().to_uint());
               print_name();
-              std::cout << "Send Hypothesis with value " << m_internal_state.get_nb_available_values().to_uint() << std::endl ;
-              m_internal_state.hypothesis_sent(true);
+              std::cout << "Send Hypothesis with value " << /*m_internal_state*/m_internal_states[m_nb_state]->get_nb_available_values().to_uint() << std::endl ;
+              /*m_internal_state*/m_internal_states[m_nb_state]->hypothesis_sent(true);
             }
-	  else if(m_internal_state.is_hypothesis_returned() && !m_internal_state.is_check_sent() && !m_internal_state.is_check_granted())
+	  else if(/*m_internal_state*/m_internal_states[m_nb_state]->is_hypothesis_returned() && !/*m_internal_state*/m_internal_states[m_nb_state]->is_check_sent() && !/*m_internal_state*/m_internal_states[m_nb_state]->is_check_granted())
 	    {
               print_name();
               std::cout << "Send Check" << std::endl ;
@@ -465,11 +503,11 @@ namespace sudoku_systemc
 							 m_horizontal_sub_group,
 							 0x1
 							 );
-	      m_internal_state.set_check_sent(true);
+	      /*m_internal_state*/m_internal_states[m_nb_state]->set_check_sent(true);
 	    }
-	  else if(m_internal_state.is_hypothesis_accepted() && !m_internal_state.is_new_level_sent())
+	  else if(/*m_internal_state*/m_internal_states[m_nb_state]->is_hypothesis_accepted() && !/*m_internal_state*/m_internal_states[m_nb_state]->is_new_level_sent())
 	    {
-	      m_internal_state.set_new_level_sent(true);
+	      /*m_internal_state*/m_internal_states[m_nb_state]->set_new_level_sent(true);
 	      l_message = new sudoku_message_set_hyp_level<SIZE>(m_vertical_group,
                                                                  m_vertical_sub_group,
                                                                  m_horizontal_group,
