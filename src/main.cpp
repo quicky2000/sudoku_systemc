@@ -920,6 +920,22 @@ int sc_main(int argc, char ** argv)
       //  | 59|3 7|6 2|
       //  | 23| 69|57 |
       //  -------------
+
+      //  -------------
+      //  |531|642|897|
+      //  |296|758|143|
+      //  |784|931|256|
+      //  -------------
+      //  |845|276|931|
+      //  |312|894|765|
+      //  |962|513|487|
+      //  -------------
+      //  |678|425|319|
+      //  |459|387|612|
+      //  |123|469|578|
+      //  -------------
+
+
       l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(0,0),5));
       l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(1,0),3));
       //      l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(2,0),));
@@ -1061,6 +1077,8 @@ int sc_main(int argc, char ** argv)
 
       l_init_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(1,8),9));
       l_init_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(5,8),8));
+
+      // Solution without hypothesis
       //  -------------
       //  |  3|7  | 96|
       //  |829| 6 |347|
@@ -1074,6 +1092,24 @@ int sc_main(int argc, char ** argv)
       //  |14 | 37|928|
       //  | 92|  8|7 4|
       //  -------------
+
+      // Solution using hypothesis
+      //-------------
+      //|513|742|896|
+      //|829|165|347|
+      //|764|893|152|
+      //-------------
+      //|487|356|219|
+      //|936|281|475|
+      //|251|974|683|
+      //-------------
+      //|378|429|561|
+      //|145|637|928|
+      //|692|518|734|
+      //-------------
+
+
+
       //      l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(0,0),));
       //      l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(1,0),));
       l_reference_values.insert(std::map<std::pair<unsigned int,unsigned int>,unsigned int>::value_type(std::pair<unsigned int,unsigned int>(2,0),3));
@@ -1796,6 +1832,8 @@ int sc_main(int argc, char ** argv)
   sc_start();
 
   l_top.check(l_reference_values);
+
+  std::cout << l_top.to_string() << std::endl ;
 
   exit(0);
 }
