@@ -1,4 +1,5 @@
 #include "top.h"
+#include <sstream>
 
 //------------------------------------------------------------------------------
 top::top(sc_module_name name,
@@ -49,5 +50,49 @@ void top::check(const std::map<std::pair<unsigned int,unsigned int>,unsigned int
     }
   std::cout << "Check " << (l_error ? "FAILED" : "OK" ) << std::endl ;
   
+}
+
+std::string top::to_string(void)const
+{
+  std::stringstream l_result;
+  unsigned int l_big_side_size = 9;
+  const std::string l_horizontal_separator = std::string(l_big_side_size*4+1,'-');
+  const std::string l_horizontal_separator_2 = std::string(l_big_side_size*4+1,'+');
+  for(unsigned int l_y = 0; l_y < l_big_side_size ; l_y++)
+    {
+      if( l_y % 3)
+	{
+	  l_result << l_horizontal_separator << endl ;
+	}
+      else
+	{
+	  l_result << l_horizontal_separator_2 << endl ;
+	}
+
+      for(unsigned int l_x = 0; l_x < l_big_side_size ; l_x++)
+	{
+      if( l_x % 3)
+	{
+	  l_result << "  "  ;
+	}
+      else
+	{
+	  l_result << "| "  ;
+	}
+	  if(m_sudoku.is_cell_value_set(l_x,l_y))
+	    {
+	      l_result << m_sudoku.get_cell_value(l_x,l_y).to_uint()+1 ;
+	    }
+	  else
+	    {
+	      l_result << " " ;
+	    }
+	  l_result << " ";
+	}
+      l_result << "|" << endl ;
+    }
+  l_result << l_horizontal_separator << endl ;
+
+  return l_result.str();
 }
 //EOF
