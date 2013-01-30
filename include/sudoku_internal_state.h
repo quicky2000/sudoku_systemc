@@ -27,6 +27,7 @@ namespace sudoku_systemc
       inline void value_sent(bool p_sent);
       inline const typename sudoku_types<SIZE>::t_data_type & get_value(void)const;
       inline const bool is_value_set(void)const;
+      void set_value(const typename sudoku_types<SIZE>::t_data_type & p_value);
 
       // Hypothesis management
       inline const bool is_hypothesis_sent(void)const;
@@ -49,8 +50,8 @@ namespace sudoku_systemc
       inline const bool is_new_level_sent(void)const;
       const unsigned int & get_hypothesis_level(void)const;
       bool is_modified(void)const ;
+
     private:
-      void set_value(const typename sudoku_types<SIZE>::t_data_type & p_value);
 
       typename sudoku_types<SIZE>::t_group_candidate m_vertical_candidates[sudoku_configuration<SIZE>::m_nb_value];
       typename sudoku_types<SIZE>::t_group_candidate m_horizontal_candidates[sudoku_configuration<SIZE>::m_nb_value];
@@ -278,7 +279,13 @@ namespace sudoku_systemc
 	  {
 	    l_index = l_index.to_uint()-1;
 	  }
-	set_value(l_index);
+	m_check_sent = false;
+	m_valid_check = true;
+	m_check_granted = false;
+	m_hypothesis_sent = false;
+	m_hypothesis_accepted = false;
+	m_hypothesis_returned = false;
+	m_set_new_level_sent = false;
 	return l_index;
       }
 

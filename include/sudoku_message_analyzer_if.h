@@ -13,6 +13,8 @@ namespace sudoku_systemc
     class sudoku_message_req_hypothesis;
   template<unsigned int SIZE> 
     class sudoku_message_set_hyp_level;
+  template<unsigned int SIZE> 
+    class sudoku_message_invalid_state;
 
   template<unsigned int SIZE> 
     class sudoku_message_analyser_if
@@ -23,6 +25,7 @@ namespace sudoku_systemc
       virtual void treat(const sudoku_message_check<SIZE> * p_message)=0;
       virtual void treat(const sudoku_message_req_hypothesis<SIZE> * p_message)=0;
       virtual void treat(const sudoku_message_set_hyp_level<SIZE>  * p_message)=0;
+      virtual void treat(const sudoku_message_invalid_state<SIZE>  * p_message)=0;
       inline virtual ~sudoku_message_analyser_if(){}
     };
 }

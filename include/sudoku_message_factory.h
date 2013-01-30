@@ -6,6 +6,7 @@
 #include "sudoku_message_check.h"
 #include "sudoku_message_req_hypothesis.h"
 #include "sudoku_message_set_hyp_level.h"
+#include "sudoku_message_invalid_state.h"
 
 namespace sudoku_systemc
 {
@@ -61,6 +62,11 @@ namespace sudoku_systemc
 								p_data);
 	      break;
 	    case sudoku_message_base<SIZE>::INVALID_STATE:
+	      l_result = new sudoku_message_invalid_state<SIZE>(p_vertical_group,
+								p_vertical_sub_group,
+								p_horizontal_group,
+								p_horizontal_sub_group,
+								p_data);
 	      break;
 	    default:
 	      std::cout << "ERROR : unkown command field value " << p_cmd.to_uint() << std::endl ;
