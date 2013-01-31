@@ -4,13 +4,16 @@
 #include "systemc.h"
 #include "sudoku_cell.h"
 #include "sudoku_bus.h"
+#include "to_string_if.h"
 #include <iostream>
 #include <map>
 
 namespace sudoku_systemc
 {
   template<unsigned int SIZE>
-    class sudoku:public sc_module
+    class sudoku:
+  public sc_module,
+    public to_string_if
   {
   public:
     SC_HAS_PROCESS(sudoku);
@@ -43,7 +46,7 @@ namespace sudoku_systemc
 		  unsigned int l_init_value = (l_iter == p_init_values.end() ? 0 : l_iter->second);
 		  std::stringstream l_cell_name_stream;
 		  l_cell_name_stream << "Cell_" << l_x << "_" << l_y ;
-		  m_cells2[l_x][l_y] = new sudoku_cell<SIZE>(l_cell_name_stream.str().c_str(),l_x,l_y,l_init_value);
+		  m_cells2[l_x][l_y] = new sudoku_cell<SIZE>(l_cell_name_stream.str().c_str(),*this,l_x,l_y,l_init_value);
 		  m_cells2[l_x][l_y]->m_clk(m_clk_sig);
 
 		  // Store cell for output port binding
@@ -87,6 +90,8 @@ namespace sudoku_systemc
 
       sc_in<bool> m_clk;
   private:
+      std::string to_string(void)const;
+
       void clk_management(void)
       {
 	m_clk_sig.write(m_clk.read());
@@ -97,6 +102,52 @@ namespace sudoku_systemc
       sudoku_cell<SIZE> *m_cells2[SIZE*SIZE][SIZE*SIZE];
       sudoku_bus<SIZE> *m_buses[SIZE*SIZE*SIZE*SIZE];
   };
+
+  //------------------------------------------------------------------------
+  template<unsigned int SIZE>
+    std::string sudoku<SIZE>::to_string(void)const
+    {
+      std::stringstream l_result;
+      unsigned int l_big_side_size = SIZE * SIZE;
+      const std::string l_horizontal_separator = std::string(l_big_side_size*4+1,'-');
+      const std::string l_horizontal_separator_2 = std::string(l_big_side_size*4+1,'+');
+      for(unsigned int l_y = 0; l_y < l_big_side_size ; l_y++)
+	{
+	  if( l_y % SIZE)
+	    {
+	      l_result << l_horizontal_separator << endl ;
+	    }
+	  else
+	    {
+	      l_result << l_horizontal_separator_2 << endl ;
+	    }
+
+	  for(unsigned int l_x = 0; l_x < l_big_side_size ; l_x++)
+	    {
+	      if( l_x % SIZE)
+		{
+		  l_result << "  "  ;
+		}
+	      else
+		{
+		  l_result << "| "  ;
+		}
+	      if(m_cells2[l_x][l_y]->is_value_set())
+		{
+		  l_result << m_cells2[l_x][l_y]->get_value().to_uint() + 1 ;
+		}
+	      else
+		{
+		  l_result << " " ;
+		}
+	      l_result << " ";
+	    }
+	  l_result << "|" << endl ;
+	}
+      l_result << l_horizontal_separator << endl ;
+
+      return l_result.str();
+    }
 
   //------------------------------------------------------------------------
   template<unsigned int SIZE>
