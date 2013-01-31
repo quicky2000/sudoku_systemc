@@ -13,7 +13,7 @@
 #include "sudoku_message_analyzer_if.h"
 
 #include "general_monitor.h"
-
+#include "to_string_if.h"
 namespace sudoku_systemc
 {
   template<unsigned int SIZE,unsigned int MAX_NB_STATE=SIZE*SIZE>
@@ -26,7 +26,11 @@ namespace sudoku_systemc
 
       public:
       SC_HAS_PROCESS(sudoku_cell);
-      sudoku_cell(sc_module_name name,const uint32_t & p_x,const uint32_t & p_y,const uint32_t p_init_value=0);
+      sudoku_cell(sc_module_name name,
+		  const to_string_if & p_whole,
+		  const uint32_t & p_x,
+		  const uint32_t & p_y,
+		  const uint32_t p_init_value=0);
 
       bool is_value_set(void)const;
       const typename sudoku_types<SIZE>::t_data_type & get_value(void)const;
@@ -62,6 +66,7 @@ namespace sudoku_systemc
 			      const typename sudoku_types<SIZE>::t_group_type & p_horizontal_sub_group2);
 
 
+      const to_string_if & m_whole;
       // Coordinates informations
       const uint32_t m_x;
       const uint32_t m_y;
@@ -98,11 +103,16 @@ namespace sudoku_systemc
 
   //----------------------------------------------------------------------------
   template<unsigned int SIZE,unsigned int MAX_NB_STATE>
-    sudoku_cell<SIZE,MAX_NB_STATE>::sudoku_cell(sc_module_name name,const uint32_t & p_x,const uint32_t & p_y,const uint32_t p_init_value):
+    sudoku_cell<SIZE,MAX_NB_STATE>::sudoku_cell(sc_module_name name, 
+						const to_string_if & p_whole,
+						const uint32_t & p_x,
+						const uint32_t & p_y,
+						const uint32_t p_init_value):
     sc_module(name),
     m_clk("clk"),
     m_input_port("input_port"),
     m_output_port("output_port"),
+    m_whole(p_whole),
     m_x(p_x),
     m_y(p_y),
     m_id(p_x + p_y *SIZE *SIZE),
@@ -277,6 +287,9 @@ namespace sudoku_systemc
 		    else
 		      {
 			m_invalid_state = true;
+			print_name();
+			std::cout << "Detect incoherency : I already have value " << m_internal_states[m_nb_state]->get_real_value(m_internal_states[m_nb_state]->get_value()) << std::endl ;
+		    std::cout << m_whole.to_string();
 			std::cout << "Delete invalid message" << std::endl ;
 			delete_message(p_message);
 			//			assert(false);
@@ -502,7 +515,7 @@ namespace sudoku_systemc
 		    m_internal_states[m_nb_state] = new sudoku_internal_state<SIZE>(*(m_internal_states[m_nb_state - 1]),m_general_hypothesis_level);
 		    m_internal_states[m_nb_state]->set_value(l_hypothesis);
 		    m_internal_states[m_nb_state - 1]->remove_available_value(l_hypothesis);
-
+		    std::cout << m_whole.to_string();
 		    //		exit(-1);
 		  }
 		print_name();
@@ -549,8 +562,10 @@ namespace sudoku_systemc
 	    assert(m_nb_state);
 	    delete m_internal_states[m_nb_state];
 	    --m_nb_state;
-	    --m_general_hypothesis_level;
+
+	    std::cout << m_whole.to_string();
 	  }
+	    --m_general_hypothesis_level;
         if(m_message_to_forward != p_message)
           {
             print_name();
@@ -567,21 +582,30 @@ namespace sudoku_systemc
 
 	if(m_message_to_forward != NULL)
 	  {
+	    print_name();
+	    std::cout << "Forward message" << std::endl ;
 	    l_message = m_message_to_forward;
 	    m_message_to_forward = NULL;
 	  }
-	else if(m_invalid_state && !m_invalid_sent)
-	  {	      
-	    l_message = new sudoku_message_invalid_state<SIZE>(m_vertical_group,
-							       m_vertical_sub_group,
-							       m_horizontal_group,
-							       m_horizontal_sub_group,
-							       0
-							       );
-	    m_invalid_sent = true;
+	else if(m_invalid_state)
+	  {
+	    if(!m_invalid_sent)
+	      {	      
+		print_name();
+		std::cout << "Send Invalid state" << std::endl ;
+		l_message = new sudoku_message_invalid_state<SIZE>(m_vertical_group,
+								   m_vertical_sub_group,
+								   m_horizontal_group,
+								   m_horizontal_sub_group,
+								   0
+								   );
+		m_invalid_sent = true;
+	      }
 	  }
 	else if(m_internal_states[m_nb_state]->is_value_set() && !m_internal_states[m_nb_state]->is_value_sent())
 	  {
+	    print_name();
+	    std::cout << "Send set value" << std::endl ;
 	    l_message = new sudoku_message_set_value<SIZE>(m_vertical_group,
 							   m_vertical_sub_group,
 							   m_horizontal_group,
@@ -592,6 +616,8 @@ namespace sudoku_systemc
 	  }
 	else if(m_internal_states[m_nb_state]->get_values_to_release().to_uint() > 0)
 	  {
+	    print_name();
+	    std::cout << "Send Release value" << std::endl ;
 	    l_message = new sudoku_message_release_value<SIZE>(m_vertical_group,
 							       m_vertical_sub_group,
 							       m_horizontal_group,
@@ -627,6 +653,8 @@ namespace sudoku_systemc
 	  }
 	else if(m_internal_states[m_nb_state]->is_hypothesis_accepted() && !m_internal_states[m_nb_state]->is_new_level_sent())
 	  {
+	    print_name();
+	    std::cout << "Send New Hyp Level" << std::endl ;
 	    m_internal_states[m_nb_state]->set_new_level_sent(true);
 	    l_message = new sudoku_message_set_hyp_level<SIZE>(m_vertical_group,
 							       m_vertical_sub_group,
