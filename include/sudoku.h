@@ -28,10 +28,8 @@ namespace sudoku_systemc
 	  // Array to make bus binding easier
 	  sudoku_cell<SIZE> * l_cells[SIZE*SIZE*SIZE*SIZE+1];
 
-	  //TO DELETE    m_cells = new S_cell<SIZE>**[SIZE*SIZE];
 	  for(uint32_t l_y = 0 ; l_y < SIZE * SIZE ; ++l_y)
 	    {
-	      //TO DELETE        m_cells[l_x] = new S_cell<SIZE>*[SIZE*SIZE];
 	      for(uint32_t l_x = 0 ; l_x < SIZE * SIZE ; ++l_x)
 		{
 		  uint32_t l_id = l_x + l_y *SIZE *SIZE ; 
@@ -76,9 +74,7 @@ namespace sudoku_systemc
 		{
 		  delete m_cells2[l_x][l_y];
 		}
-	      //TO DELETE        delete[] m_cells[l_x];
 	    }
-	  //TO DELETE    delete[] m_cells;
 	  for(uint32_t l_id = 0 ; l_id < SIZE*SIZE*SIZE*SIZE; ++l_id)
 	    {
 	      delete m_buses[l_id];
@@ -98,7 +94,6 @@ namespace sudoku_systemc
       }
 
       sc_signal<bool> m_clk_sig;
-      //TO DELETE  S_cell<SIZE> ***m_cells;
       sudoku_cell<SIZE> *m_cells2[SIZE*SIZE][SIZE*SIZE];
       sudoku_bus<SIZE> *m_buses[SIZE*SIZE*SIZE*SIZE];
   };
