@@ -38,7 +38,7 @@ namespace sudoku_systemc
 								     const typename sudoku_types<SIZE>::t_cmd_type & p_cmd,
 								     const typename sudoku_types<SIZE>::t_data_type & p_data)
 	{
-	  sudoku_message_base<SIZE> *l_result = NULL;
+	  sudoku_message_base<SIZE> *l_result = nullptr;
 	  switch(p_cmd.to_uint())
 	    {
 	    case sudoku_message_base<SIZE>::SET_VALUE:

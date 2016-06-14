@@ -19,6 +19,6 @@
 
 namespace sudoku_systemc
 {
-  general_monitor * general_monitor::m_unique_instance=NULL;  
+  general_monitor * general_monitor::m_unique_instance = nullptr;
 }
 //EOF

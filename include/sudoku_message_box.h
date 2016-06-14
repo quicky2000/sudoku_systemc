@@ -28,7 +28,7 @@ namespace sudoku_systemc
     public:
       sudoku_message_box(void):
 	m_empty(true),
-	m_message(NULL)
+	m_message(nullptr)
 	  {
 	  }
 
@@ -42,7 +42,7 @@ namespace sudoku_systemc
 	  {
 	    sudoku_message_base<SIZE> const * l_result = m_message;
 	    m_empty = true;
-	    m_message = NULL;
+	    m_message = nullptr;
 	    return l_result;
 	  }
 

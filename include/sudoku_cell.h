@@ -132,7 +132,7 @@ namespace sudoku_systemc
     m_horizontal_group((p_y /SIZE) % SIZE),
     m_horizontal_sub_group(p_y % SIZE),
     m_activity_counter(1 + SIZE * SIZE * SIZE * SIZE),
-    m_message_to_forward(NULL),
+    m_message_to_forward(nullptr),
     m_general_hypothesis_level(0),
     m_nb_state(0)
       {
@@ -153,7 +153,7 @@ namespace sudoku_systemc
 	m_internal_states[0] = new sudoku_internal_state<SIZE>(m_vertical_sub_group,m_horizontal_sub_group,p_init_value);
 	for(unsigned int l_index = 1; l_index < SIZE ; ++l_index)
 	  {
-	    m_internal_states[l_index] = NULL;
+	    m_internal_states[l_index] = nullptr;
 	  }
       }
 
@@ -589,14 +589,14 @@ namespace sudoku_systemc
     template<unsigned int SIZE,unsigned int MAX_NB_STATE>
       const sudoku_message_base<SIZE> * const sudoku_cell<SIZE,MAX_NB_STATE>::generate_message_to_send(void)
       {
-	const sudoku_message_base<SIZE> * l_message = NULL;
+	const sudoku_message_base<SIZE> * l_message = nullptr;
 
-	if(m_message_to_forward != NULL)
+	if(m_message_to_forward != nullptr)
 	  {
 	    print_name();
 	    std::cout << "Forward message" << std::endl ;
 	    l_message = m_message_to_forward;
-	    m_message_to_forward = NULL;
+	    m_message_to_forward = nullptr;
 	  }
 	else if(m_FSM_state.is_invalid_state())
 	  {
@@ -690,7 +690,7 @@ namespace sudoku_systemc
       {
 	while(1)
 	  {
-	    if(m_message_to_forward == NULL && !m_input_box.is_empty())
+	    if(m_message_to_forward == nullptr && !m_input_box.is_empty())
 	      {
 		print_name();
 		std::cout << "Input message available" << std::endl ;
@@ -704,7 +704,7 @@ namespace sudoku_systemc
 	    if(m_output_box.is_empty())
 	      {
                 const sudoku_message_base<SIZE> * const l_message = generate_message_to_send();
-                if(l_message != NULL)
+                if(l_message != nullptr)
                   {
                     m_output_box.set_message(l_message);
                   }

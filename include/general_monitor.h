@@ -55,7 +55,7 @@ namespace sudoku_systemc
   //----------------------------------------------------------------------------
   general_monitor * general_monitor::get_unique_instance(void)
     {
-      if(m_unique_instance == NULL)
+      if(m_unique_instance == nullptr)
 	{
 	  m_unique_instance = new general_monitor();
 	}
