@@ -72,7 +72,7 @@ namespace sudoku_systemc
   template<unsigned int SIZE> 
     sudoku_internal_state<SIZE>::sudoku_internal_state(const unsigned int & p_sub_x,
 						       const unsigned int & p_sub_y,
-						       const unsigned int & p_initial_value=0):
+						       const unsigned int & p_initial_value):
     m_available_values((1 << sudoku_configuration<SIZE>::m_nb_value) -1),
     m_nb_available_values(p_initial_value != 0 ? 1 : sudoku_configuration<SIZE>::m_nb_value),
     m_values_to_release(0),
