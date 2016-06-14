@@ -36,7 +36,7 @@ namespace sudoku_systemc
 				p_vertical_sub_group,
 				p_horizontal_group,
 				p_horizontal_sub_group,
-				sudoku_message_base<SIZE>::SET_VALUE,
+				typename sudoku_types<SIZE>::t_cmd_type((int)sudoku_message_base<SIZE>::t_cmd_message::SET_VALUE),
 				p_value)
       {
       }

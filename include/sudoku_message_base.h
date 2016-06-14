@@ -30,7 +30,7 @@ namespace sudoku_systemc
     {
     public:
 
-      typedef enum {SET_VALUE,RELEASE_VALUE,CHECK,REQ_HYP,SET_HYP_LEVEL,INVALID_STATE} t_cmd_message;
+      typedef enum class cmd_message {SET_VALUE,RELEASE_VALUE,CHECK,REQ_HYP,SET_HYP_LEVEL,INVALID_STATE} t_cmd_message;
 
       virtual void be_treated(sudoku_message_analyser_if<SIZE> * p_analyser)const=0;
 
@@ -94,19 +94,19 @@ namespace sudoku_systemc
 
 	static const std::string to_string(const typename sudoku_types<SIZE>::t_cmd_type & p_cmd)
 	  {
-	    switch(p_cmd.to_uint())
+	    switch((t_cmd_message)p_cmd.to_uint())
 	      {
-	      case SET_VALUE:
+	      case t_cmd_message::SET_VALUE:
 		return "SET_VALUE";
-	      case RELEASE_VALUE:
+	      case t_cmd_message::RELEASE_VALUE:
 		return "RELEASE_VALUE";
-	      case CHECK:
+	      case t_cmd_message::CHECK:
 		return "CHECK";
-	      case REQ_HYP:
+	      case t_cmd_message::REQ_HYP:
 		return "REQ_HYP";
-	      case SET_HYP_LEVEL:
+	      case t_cmd_message::SET_HYP_LEVEL:
 		return "SET_HYP_LEVEL";
-	      case INVALID_STATE:
+	      case t_cmd_message::INVALID_STATE:
 		return "INVALID_STATE";
 	      default:
 		std::cout << "Unknown cmd value " << p_cmd.to_uint() << std::endl ;
