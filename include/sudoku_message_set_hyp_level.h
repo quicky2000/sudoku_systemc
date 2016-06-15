@@ -41,7 +41,7 @@ namespace sudoku_systemc
       {
       }
 
-      void be_treated(sudoku_message_analyser_if<SIZE> * p_analyser)const
+      void be_treated(sudoku_message_analyser_if<SIZE> * p_analyser)const override
       {
 	assert(p_analyser);
 	p_analyser->treat(this);

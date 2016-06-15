@@ -103,7 +103,7 @@ namespace sudoku_systemc
 
       sc_in<bool> m_clk;
   private:
-      std::string to_string(void)const;
+      std::string to_string(void)const override;
 
       void clk_management(void)
       {
