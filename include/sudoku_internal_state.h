@@ -19,6 +19,7 @@
 #define SUDOKU_INTERNAL_STATE_H
 
 #include "sudoku_types.h"
+#include "cell_listener_if.h"
 
 namespace sudoku_systemc
 {
@@ -26,7 +27,7 @@ namespace sudoku_systemc
     class sudoku_internal_state
     {
     public:
-      sudoku_internal_state(const unsigned int & p_sub_x,const unsigned int & p_sub_y,const unsigned int & p_initial_value);
+      sudoku_internal_state(const unsigned int & p_sub_x,const unsigned int & p_sub_y,const unsigned int & p_initial_value, cell_listener_if & p_listener);
       sudoku_internal_state(const sudoku_internal_state<SIZE> & p_initial_state,const unsigned int & p_hypothesis_level);
 
       unsigned int get_real_value(const typename sudoku_types<SIZE>::t_data_type & p_value)const;
@@ -47,8 +48,10 @@ namespace sudoku_systemc
       const unsigned int & get_hypothesis_level(void)const;
 
       bool is_modified(void)const ;
+      void notify_listener(void);
 
     private:
+      cell_listener_if & m_listener;
 
       typename sudoku_types<SIZE>::t_group_candidate m_vertical_candidates[sudoku_configuration<SIZE>::m_nb_value];
       typename sudoku_types<SIZE>::t_group_candidate m_horizontal_candidates[sudoku_configuration<SIZE>::m_nb_value];

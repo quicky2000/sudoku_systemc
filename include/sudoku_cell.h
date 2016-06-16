@@ -44,6 +44,7 @@ namespace sudoku_systemc
 		  const to_string_if & p_whole,
 		  const uint32_t & p_x,
 		  const uint32_t & p_y,
+		  cell_listener_if & p_listener,
 		  const uint32_t p_init_value=0);
 
       bool is_value_set(void)const;

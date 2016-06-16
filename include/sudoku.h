@@ -27,6 +27,9 @@
 
 namespace sudoku_systemc
 {
+
+  class listener_provider_if;
+
   template<unsigned int SIZE>
     class sudoku:
   public sc_module,
@@ -35,7 +38,8 @@ namespace sudoku_systemc
   public:
     SC_HAS_PROCESS(sudoku);
     sudoku(sc_module_name name,
-	   const std::map<std::pair<unsigned int,unsigned int>,unsigned int> & p_init_values);
+	   const std::map<std::pair<unsigned int,unsigned int>,unsigned int> & p_init_values,
+	   listener_provider_if & p_provider);
 
     ~sudoku(void);
 

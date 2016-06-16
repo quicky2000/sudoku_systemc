@@ -29,7 +29,9 @@ sudoku_cell<SIZE,MAX_NB_STATE>::sudoku_cell(sc_module_name name,
 					    const to_string_if & p_whole,
 					    const uint32_t & p_x,
 					    const uint32_t & p_y,
-					    const uint32_t p_init_value):
+					    cell_listener_if & p_listener,
+					    const uint32_t p_init_value
+					    ):
   sc_module(name),
   m_clk("clk"),
   m_input_port("input_port"),
@@ -61,7 +63,7 @@ sudoku_cell<SIZE,MAX_NB_STATE>::sudoku_cell(sc_module_name name,
   SC_THREAD(run);
   sensitive << m_clk.pos();
 
-  m_internal_states[0] = new sudoku_internal_state<SIZE>(m_vertical_sub_group,m_horizontal_sub_group,p_init_value);
+  m_internal_states[0] = new sudoku_internal_state<SIZE>(m_vertical_sub_group, m_horizontal_sub_group, p_init_value, p_listener);
   for(unsigned int l_index = 1; l_index < SIZE ; ++l_index)
     {
       m_internal_states[l_index] = nullptr;
@@ -484,6 +486,7 @@ void sudoku_cell<SIZE,MAX_NB_STATE>::treat(const sudoku_message_invalid_state<SI
       assert(m_nb_state);
       delete m_internal_states[m_nb_state];
       --m_nb_state;
+      m_internal_states[m_nb_state]->notify_listener();
       m_FSM_state.reset();
       std::cout << m_whole.to_string();
     }

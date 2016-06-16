@@ -23,7 +23,9 @@ namespace sudoku_systemc
   template<unsigned int SIZE> 
   sudoku_internal_state<SIZE>::sudoku_internal_state(const unsigned int & p_sub_x,
 						     const unsigned int & p_sub_y,
-						     const unsigned int & p_initial_value):
+						     const unsigned int & p_initial_value,
+						     cell_listener_if & p_listener):
+    m_listener(p_listener),
     m_available_values((1 << sudoku_configuration<SIZE>::m_nb_value) -1),
     m_nb_available_values(p_initial_value != 0 ? 1 : sudoku_configuration<SIZE>::m_nb_value),
     m_values_to_release(0),
@@ -40,7 +42,7 @@ namespace sudoku_systemc
       }
     if(p_initial_value)
       {
-	set_value(p_initial_value-1);
+	set_value(p_initial_value - 1);
       }
   }
 
@@ -48,6 +50,7 @@ namespace sudoku_systemc
   template<unsigned int SIZE> 
   sudoku_internal_state<SIZE>::sudoku_internal_state(const sudoku_internal_state<SIZE> & p_initial_state,
 						     const unsigned int & p_hypothesis_level):
+    m_listener(p_initial_state.m_listener),
     m_available_values(p_initial_state.m_available_values),
     m_nb_available_values(p_initial_state.m_nb_available_values),
     m_values_to_release(p_initial_state.m_values_to_release),
@@ -209,6 +212,7 @@ namespace sudoku_systemc
     assert(m_value.to_uint() == 0);
     assert(m_available_values[p_value.to_uint()] == true);
     assert(m_nb_available_values.to_uint());
+    m_listener.set_value(p_value.to_uint() + 1);
     m_value_set = true;
     m_value = p_value;
     m_available_values[p_value.to_uint()] = false;
@@ -224,5 +228,18 @@ namespace sudoku_systemc
     return p_value.to_uint()+1;
   }
 
+  //----------------------------------------------------------------------------
+  template<unsigned int SIZE>
+  void sudoku_internal_state<SIZE>::notify_listener(void)
+  {
+    if(m_value_set)
+      {
+	m_listener.set_value(m_value.to_uint() + 1);
+      }
+    else
+      {
+	m_listener.clear_value();
+      }
+  }
 }
 //EOF

@@ -20,16 +20,26 @@
 
 #include "systemc.h"
 #include "sudoku.h"
+#include "synoptic.h"
+#include "synoptic_grid.h"
 
 class top:public sc_module
 {
 public:
+  SC_HAS_PROCESS(top);
   top(sc_module_name name,
       const std::map<std::pair<unsigned int,unsigned int>,unsigned int> & p_init_values);
+  ~top(void);
   void check(const std::map<std::pair<unsigned int,unsigned int>,unsigned int> & p_reference_values)const;
   std::string to_string(void)const;
-private:
+
+ private:
+  void refresh_GUI(void);
+
   sc_clock m_clk;
-  sudoku_systemc::sudoku<3> m_sudoku;
+  synoptic::synoptic m_synoptic;
+  sudoku_systemc::synoptic_grid<3> m_grid;
+  sudoku_systemc::sudoku<3> * m_sudoku;
 };
-#endif
+#endif // S_TOP_HPP
+// EOF

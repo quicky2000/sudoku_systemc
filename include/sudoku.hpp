@@ -16,13 +16,16 @@
       along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
+#include "listener_provider_if.h"
+
 namespace sudoku_systemc
 {
 
   //------------------------------------------------------------------------------
   template<unsigned int SIZE>
   sudoku<SIZE>::sudoku(sc_module_name name,
-		       const std::map<std::pair<unsigned int,unsigned int>,unsigned int> & p_init_values):
+		       const std::map<std::pair<unsigned int,unsigned int>,unsigned int> & p_init_values,
+		       listener_provider_if & p_provider):
     sc_module(name),
     m_clk("clk"),
     m_clk_sig("clk_sig")
@@ -48,7 +51,7 @@ namespace sudoku_systemc
 	    unsigned int l_init_value = (l_iter == p_init_values.end() ? 0 : l_iter->second);
 	    std::stringstream l_cell_name_stream;
 	    l_cell_name_stream << "Cell_" << l_x << "_" << l_y ;
-	    m_cells2[l_x][l_y] = new sudoku_cell<SIZE>(l_cell_name_stream.str().c_str(),*this,l_x,l_y,l_init_value);
+	    m_cells2[l_x][l_y] = new sudoku_cell<SIZE>(l_cell_name_stream.str().c_str(),*this,l_x,l_y, p_provider.get_cell_listener(l_x,l_y), l_init_value);
 	    m_cells2[l_x][l_y]->m_clk(m_clk_sig);
 
 	    // Store cell for output port binding
