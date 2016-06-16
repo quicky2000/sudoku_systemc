@@ -15,8 +15,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
-#ifndef SUDOKU_BUS_HPP
-#define SUDOKU_BUS_HPP
+#ifndef SUDOKU_BUS_H
+#define SUDOKU_BUS_H
 
 #include "systemc.h"
 #include "sudoku_types.h"
@@ -37,19 +37,11 @@ namespace sudoku_systemc
       sc_signal<typename sudoku_types<SIZE>::t_cmd_type> m_cmd;
       sc_signal<typename sudoku_types<SIZE>::t_data_type> m_data;
 
-      sudoku_bus(const std::string & p_name):
-	m_req((p_name+"_req").c_str()),
-	m_acq((p_name+"_acq").c_str()),
-	m_vertical_group((p_name+"_vertical_group").c_str()),
-	m_vertical_sub_group((p_name+"_vertical_sub_group").c_str()),
-	m_horizontal_group((p_name+"_horizontal_group").c_str()),
-	m_horizontal_sub_group((p_name+"_horizontal_sub_group").c_str()),
-	m_cmd((p_name+"_cmd").c_str()),
-	m_data((p_name+"_data").c_str())
-	  {
-	  }
+      sudoku_bus(const std::string & p_name);
     private:
     };
+
+  #include "sudoku_bus.hpp"
 }
-#endif // SUDOKU_BUS_HPP
+#endif // SUDOKU_BUS_H
 //EOF

@@ -36,64 +36,12 @@ namespace sudoku_systemc
 								     const typename sudoku_types<SIZE>::t_group_type & p_horizontal_group,
 								     const typename sudoku_types<SIZE>::t_group_type & p_horizontal_sub_group,
 								     const typename sudoku_types<SIZE>::t_cmd_type & p_cmd,
-								     const typename sudoku_types<SIZE>::t_data_type & p_data)
-	{
-	  sudoku_message_base<SIZE> *l_result = nullptr;
-	  switch((typename sudoku_message_base<SIZE>::t_cmd_message)p_cmd.to_uint())
-	    {
-	    case sudoku_message_base<SIZE>::t_cmd_message::SET_VALUE:
-	      {
-		l_result = new sudoku_message_set_value<SIZE>(p_vertical_group,
-							      p_vertical_sub_group,
-							      p_horizontal_group,
-							      p_horizontal_sub_group,
-							      p_data);
-	      }
-	      break;
-	    case sudoku_message_base<SIZE>::t_cmd_message::RELEASE_VALUE:
-	      l_result = new sudoku_message_release_value<SIZE>(p_vertical_group,
-								p_vertical_sub_group,
-								p_horizontal_group,
-								p_horizontal_sub_group,
-								p_data);
-	      break;
-	    case sudoku_message_base<SIZE>::t_cmd_message::REQ_HYP:
-	      l_result = new sudoku_message_req_hypothesis<SIZE>(p_vertical_group,
-								 p_vertical_sub_group,
-								 p_horizontal_group,
-								 p_horizontal_sub_group,
-								 p_data);
-	      break;
-	    case sudoku_message_base<SIZE>::t_cmd_message::CHECK:
-	      l_result = new sudoku_message_check<SIZE>(p_vertical_group,
-							p_vertical_sub_group,
-							p_horizontal_group,
-							p_horizontal_sub_group,
-							p_data);
-	      break;
-	    case sudoku_message_base<SIZE>::t_cmd_message::SET_HYP_LEVEL:
-	      l_result = new sudoku_message_set_hyp_level<SIZE>(p_vertical_group,
-								p_vertical_sub_group,
-								p_horizontal_group,
-								p_horizontal_sub_group,
-								p_data);
-	      break;
-	    case sudoku_message_base<SIZE>::t_cmd_message::INVALID_STATE:
-	      l_result = new sudoku_message_invalid_state<SIZE>(p_vertical_group,
-								p_vertical_sub_group,
-								p_horizontal_group,
-								p_horizontal_sub_group,
-								p_data);
-	      break;
-	    default:
-	      std::cout << "ERROR : unkown command field value " << p_cmd.to_uint() << std::endl ;
-	      exit(-1);
-	    }
-	  return l_result;
-	}
-
+								     const typename sudoku_types<SIZE>::t_data_type & p_data);
     private:
     };
+
+#include "sudoku_message_factory.hpp"
+
 }
 #endif // SUDOKU_MESSAGE_FACTORY_H
-//EOF
+// EOF

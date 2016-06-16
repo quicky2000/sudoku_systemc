@@ -31,28 +31,17 @@ namespace sudoku_systemc
 			 const typename sudoku_types<SIZE>::t_group_type & p_vertical_sub_group,
 			 const typename sudoku_types<SIZE>::t_group_type & p_horizontal_group,
 			 const typename sudoku_types<SIZE>::t_group_type & p_horizontal_sub_group,
-			 const typename sudoku_types<SIZE>::t_data_type & p_value):
-      sudoku_message_base<SIZE>(p_vertical_group,
-				p_vertical_sub_group,
-				p_horizontal_group,
-				p_horizontal_sub_group,
-				typename sudoku_types<SIZE>::t_cmd_type((int)sudoku_message_base<SIZE>::t_cmd_message::CHECK),
-				p_value)
-      {
-      }
+			 const typename sudoku_types<SIZE>::t_data_type & p_value);
 
-      void be_treated(sudoku_message_analyser_if<SIZE> * p_analyser)const override
-      {
-	assert(p_analyser);
-	p_analyser->treat(this);
-      }
+    void be_treated(sudoku_message_analyser_if<SIZE> * p_analyser)const override;
 
-      bool is_valid(void)const
-      {
-	return this->get_data().to_uint() & 0x1;
-      }
+    bool is_valid(void)const;
+
   private:
   };
+
+#include "sudoku_message_check.hpp"
+
 }
 #endif // SUDOKU_MESSAGE_CHECK_H
 //EOP

@@ -15,8 +15,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
-#ifndef SUDOKU_INPUT_PORT_HPP
-#define SUDOKU_INPUT_PORT_HPP
+#ifndef SUDOKU_INPUT_PORT_H
+#define SUDOKU_INPUT_PORT_H
 
 #include "sudoku_bus.h"
 
@@ -34,32 +34,14 @@ namespace sudoku_systemc
       sc_in<typename sudoku_types<SIZE>::t_cmd_type> m_cmd;
       sc_in<typename sudoku_types<SIZE>::t_data_type> m_data;
 
-      void operator () (sudoku_bus<SIZE> & p_bus)
-      {
-	m_req(p_bus.m_req);
-	m_acq(p_bus.m_acq);
-	m_vertical_group(p_bus.m_vertical_group);
-	m_vertical_sub_group(p_bus.m_vertical_sub_group);
-	m_horizontal_group(p_bus.m_horizontal_group);
-	m_horizontal_sub_group(p_bus.m_horizontal_sub_group);
-    
-	m_cmd(p_bus.m_cmd);
-	m_data(p_bus.m_data);
-      }
+      void operator () (sudoku_bus<SIZE> & p_bus);
 
-      sudoku_input_port(const std::string & p_name):
-	m_req((p_name+"_req").c_str()),
-	m_acq((p_name+"_acq").c_str()),
-	m_vertical_group((p_name+"_vertical_group").c_str()),
-	m_vertical_sub_group((p_name+"_vertical_sub_group").c_str()),
-	m_horizontal_group((p_name+"_horizontal_group").c_str()),
-	m_horizontal_sub_group((p_name+"_horizontal_sub_group").c_str()),
-	m_cmd((p_name+"_cmd").c_str()),
-	m_data((p_name+"_data").c_str())
-	  {
-	  }
+      sudoku_input_port(const std::string & p_name);
+
     private:
     };
+
+  #include "sudoku_input_port.hpp"
 }
-#endif // SUDOKU_INPUT_PORT_HPP
+#endif // SUDOKU_INPUT_PORT_H
 //EOF
