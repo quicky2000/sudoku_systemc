@@ -212,7 +212,7 @@ namespace sudoku_systemc
     assert(m_value.to_uint() == 0);
     assert(m_available_values[p_value.to_uint()] == true);
     assert(m_nb_available_values.to_uint());
-    m_listener.set_value(p_value.to_uint() + 1);
+    m_listener.set_value(p_value.to_uint() + 1, m_hypothesis_level);
     m_value_set = true;
     m_value = p_value;
     m_available_values[p_value.to_uint()] = false;
@@ -234,7 +234,7 @@ namespace sudoku_systemc
   {
     if(m_value_set)
       {
-	m_listener.set_value(m_value.to_uint() + 1);
+	m_listener.set_value(m_value.to_uint() + 1, m_hypothesis_level);
       }
     else
       {

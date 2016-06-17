@@ -19,18 +19,17 @@
 #define _SYNOPTIC_CHAR_H_
 
 #include "custom_field_zone.h"
-#include "cell_listener_if.h"
 #include <map>
 #include <cinttypes>
 #include <string>
 
 namespace sudoku_systemc
 {
-  class synoptic_char: public synoptic::custom_field_zone, public cell_listener_if
+  class synoptic_char: public synoptic::custom_field_zone
   {
   public:
     inline synoptic_char(synoptic::zone_owner_if &,
-				  const std::string & p_name);
+			 const std::string & p_name);
     inline static const uint32_t & get_width(void);
     inline static const uint32_t & get_height(void);
     inline static void init(void);
@@ -39,11 +38,6 @@ namespace sudoku_systemc
     // Methods inherited from custom_field_zone
     inline const uint64_t & get_content_representation(const uint32_t & p_content) override;
     // End of methods inherited from custom_field_zone
-
-    // Methods inherited from cell_listener_if
-    inline void set_value(const unsigned int & p_value) override;
-    inline void clear_value(void) override;
-    // End of methods inherited from cell_listener_if
 
     typedef std::map<uint32_t,uint64_t> table_t;
     static table_t m_content_representation;

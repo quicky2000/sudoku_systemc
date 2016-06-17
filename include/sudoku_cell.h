@@ -80,7 +80,7 @@ namespace sudoku_systemc
 			      const typename sudoku_types<SIZE>::t_group_type & p_horizontal_group2,
 			      const typename sudoku_types<SIZE>::t_group_type & p_horizontal_sub_group2);
 
-
+      cell_listener_if & m_listener;
       const to_string_if & m_whole;
       // Coordinates informations
       const uint32_t m_x;

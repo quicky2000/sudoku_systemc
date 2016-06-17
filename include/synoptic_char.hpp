@@ -93,17 +93,4 @@ const uint64_t & synoptic_char::get_content_representation(const uint32_t & p_co
   return m_default_representation;
 }
 
-//--------------------------------------------------------------------------
-void synoptic_char::set_value(const unsigned int & p_value)
-{
-  this->set_content('0' + p_value);
-  paint();
-}
-
-//--------------------------------------------------------------------------
-void synoptic_char::clear_value(void)
-{
-  this->set_content(' ');
-  paint();
-}
 // EOF

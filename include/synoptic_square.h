@@ -21,7 +21,7 @@
 #include "synoptic.h"
 #include "zone_container.h"
 #include "color_zone.h"
-#include "synoptic_char.h"
+#include "synoptic_cell.h"
 
 namespace sudoku_systemc
 {
@@ -36,7 +36,9 @@ namespace sudoku_systemc
 	 @p_size number of cells per square side
       */
       synoptic_square(synoptic::synoptic & p_owner,
-		      const std::string & p_name);
+		      const std::string & p_name,
+		      unsigned int p_x,
+		      unsigned int p_y);
       ~synoptic_square(void);
 
       inline static const unsigned int & get_computed_width(void);
@@ -51,7 +53,7 @@ namespace sudoku_systemc
       synoptic::color_zone m_right_border;
       synoptic::color_zone m_down_border;
       synoptic::color_zone m_left_border;
-      synoptic_char *m_cells[SIZE][SIZE];
+      synoptic_cell *m_cells[SIZE][SIZE];
     
       static unsigned int m_computed_width;
       static unsigned int m_computed_height;

@@ -36,6 +36,7 @@ sudoku_cell<SIZE,MAX_NB_STATE>::sudoku_cell(sc_module_name name,
   m_clk("clk"),
   m_input_port("input_port"),
   m_output_port("output_port"),
+  m_listener(p_listener),
   m_whole(p_whole),
   m_x(p_x),
   m_y(p_y),
@@ -415,6 +416,7 @@ void sudoku_cell<SIZE,MAX_NB_STATE>::treat(const sudoku_message_set_hyp_level<SI
   if(!m_FSM_state.is_invalid_state())
     {
       ++m_general_hypothesis_level;
+      m_listener.set_hypothesis_level(m_general_hypothesis_level);
       if(!m_internal_states[m_nb_state]->is_value_set())
 	{
 	  if(!is_mine(p_message))
@@ -479,6 +481,9 @@ void sudoku_cell<SIZE,MAX_NB_STATE>::treat(const sudoku_message_invalid_state<SI
       m_FSM_state.set_invalid_state(false);
       m_FSM_state.invalid_sent(false);
     }
+  // Notify listener before decreasing general hypothesis level so that internal state notification
+  // will be taken in account
+  m_listener.set_hypothesis_level(m_general_hypothesis_level - 1);
   if(m_internal_states[m_nb_state]->get_hypothesis_level() == m_general_hypothesis_level)
     {
       print_name();

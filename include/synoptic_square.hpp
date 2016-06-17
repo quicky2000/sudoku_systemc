@@ -24,7 +24,9 @@ namespace sudoku_systemc
   //------------------------------------------------------------------------------
   template<unsigned int SIZE>
   synoptic_square<SIZE>::synoptic_square(synoptic::synoptic & p_owner,
-					 const std::string & p_name):
+					 const std::string & p_name,
+					 unsigned int p_x,
+					 unsigned int p_y):
     synoptic::zone_container(p_name, synoptic_square<SIZE>::get_computed_width(), synoptic_square<SIZE>::get_computed_height()),
     m_up_border(p_owner, p_name + "_up_border", get_width(), 1, 255, 255, 255),
     m_right_border(p_owner, p_name + "_right_border", 1, get_height() - 2, 255, 255, 255),
@@ -36,12 +38,11 @@ namespace sudoku_systemc
 	for(unsigned int l_y = 0 ; l_y < SIZE ; ++l_y)
 	  {
 	    std::stringstream l_x_stream;
-	    l_x_stream << l_x;
+	    l_x_stream << (l_x + SIZE * p_x);
 	    std::stringstream l_y_stream;
-	    l_y_stream << l_y;
-	    m_cells[l_x][l_y] = new synoptic_char(p_owner,"cell[" + l_x_stream.str() + "][" + l_y_stream.str() + "]");
-	    m_cells[l_x][l_y]->set_content(' ');
-	    add_zone(2 + l_x + l_x * synoptic_char::get_width(),2 + l_y + l_y * synoptic_char::get_height(), *m_cells[l_x][l_y]);
+	    l_y_stream << (l_y + SIZE * p_y);
+	    m_cells[l_x][l_y] = new synoptic_cell(p_owner,"cell[" + l_x_stream.str() + "][" + l_y_stream.str() + "]");
+	    add_zone(2 + l_x + l_x * synoptic_cell::get_computed_width(),2 + l_y + l_y * synoptic_cell::get_computed_height(), *m_cells[l_x][l_y]);
 	  }
       }
 
@@ -91,8 +92,8 @@ namespace sudoku_systemc
   template<unsigned int SIZE>
   void synoptic_square<SIZE>::compute_dimensions(void)
   {
-    m_computed_width = synoptic_char::get_width() * SIZE + 4 + (SIZE - 1);
-    m_computed_height = synoptic_char::get_height() * SIZE + 4 + (SIZE - 1);
+    m_computed_width = synoptic_cell::get_computed_width() * SIZE + 4 + (SIZE - 1);
+    m_computed_height = synoptic_cell::get_computed_height() * SIZE + 4 + (SIZE - 1);
   }
 
   //------------------------------------------------------------------------------

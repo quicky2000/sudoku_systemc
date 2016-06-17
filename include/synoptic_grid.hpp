@@ -35,7 +35,7 @@ namespace sudoku_systemc
 	    l_x_stream << l_x;
 	    std::stringstream l_y_stream;
 	    l_y_stream << l_y;
-	    m_squares[l_x][l_y] = new synoptic_square<SIZE>(p_owner,"square[" + l_x_stream.str() + "][" + l_y_stream.str() + "]");
+	    m_squares[l_x][l_y] = new synoptic_square<SIZE>(p_owner,"square[" + l_x_stream.str() + "][" + l_y_stream.str() + "]",l_x,l_y);
 	    add_zone(l_x * synoptic_square<SIZE>::get_computed_width(), l_y * synoptic_square<SIZE>::get_computed_height(), *m_squares[l_x][l_y]);
 	  }
       }

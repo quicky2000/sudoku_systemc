@@ -16,21 +16,37 @@
       along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-#ifndef _CELL_LISTENER_IF_H_
-#define _CELL_LISTENER_IF_H_
+#ifndef SYNOPTIC_CELL_H
+#define SYNOPTIC_CELL_H
+
+#include "zone_owner_if.h"
+#include "zone_container.h"
+#include "synoptic_char.h"
+#include "cell_listener_if.h"
+
 namespace sudoku_systemc
 {
-  class cell_listener_if
+  class synoptic_cell: public synoptic::zone_container, public cell_listener_if
   {
   public:
-    virtual void set_value(const unsigned int & p_value, const unsigned int & p_hypothesis_level)=0;
-    virtual void clear_value(void)=0;
-    virtual void set_hypothesis_level(const unsigned int & p_level)=0;
+    inline synoptic_cell(synoptic::zone_owner_if &,
+			 const std::string & p_name);
+    inline static const uint32_t & get_computed_width(void);
+    inline static const uint32_t & get_computed_height(void);
 
-    inline virtual ~cell_listener_if(void){}
   private:
+    // Methods inherited from cell_listener_if
+    inline void set_value(const unsigned int & p_value, const unsigned int & p_hypothesis_level) override;
+    inline void clear_value(void) override;
+    inline void set_hypothesis_level(const unsigned int & p_level) override;
+    // End of methods inherited from cell_listener_if
+
+    synoptic_char m_char_field;
+    unsigned int m_hypothesis_level;
   };
 }
 
-#endif // _CELL_LISTENER_IF_H_
+#include "synoptic_cell.hpp"
+#endif // SYNOPTIC_CELL_H
+
 // EOF
