@@ -26,6 +26,7 @@ namespace sudoku_systemc
     virtual void set_value(const unsigned int & p_value, const unsigned int & p_hypothesis_level)=0;
     virtual void clear_value(void)=0;
     virtual void set_hypothesis_level(const unsigned int & p_level)=0;
+    virtual void mark_as_initial_value(void)=0;
 
     inline virtual ~cell_listener_if(void){}
   private:

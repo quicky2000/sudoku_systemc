@@ -63,6 +63,12 @@ namespace sudoku_systemc
   {
     m_hypothesis_level = p_level;
   }
+
+  //----------------------------------------------------------------------------
+  void synoptic_cell::mark_as_initial_value(void)
+  {
+    m_char_field.set_char_color(0,255,0);
+  }
 }
 
 // EOF

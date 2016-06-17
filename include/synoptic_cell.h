@@ -39,6 +39,7 @@ namespace sudoku_systemc
     inline void set_value(const unsigned int & p_value, const unsigned int & p_hypothesis_level) override;
     inline void clear_value(void) override;
     inline void set_hypothesis_level(const unsigned int & p_level) override;
+    inline void mark_as_initial_value(void) override;
     // End of methods inherited from cell_listener_if
 
     synoptic_char m_char_field;
