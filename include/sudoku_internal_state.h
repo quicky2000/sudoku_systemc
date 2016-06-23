@@ -51,6 +51,12 @@ namespace sudoku_systemc
       void notify_listener(void);
 
     private:
+      void set_horizontal_candidate(const unsigned int & p_index, const typename sudoku_types<SIZE>::t_group_candidate & p_value);
+      void set_vertical_candidate(const unsigned int & p_index, const typename sudoku_types<SIZE>::t_group_candidate & p_value);
+      void set_square_candidate(const unsigned int & p_index, const typename sudoku_types<SIZE>::t_group_candidate & p_value);
+      void set_available_value(const unsigned int & p_index, bool p_value);
+      void set_release_value(const unsigned int & p_index, bool p_value);
+
       cell_listener_if & m_listener;
 
       typename sudoku_types<SIZE>::t_group_candidate m_vertical_candidates[sudoku_configuration<SIZE>::m_nb_value];

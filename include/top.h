@@ -21,7 +21,7 @@
 #include "systemc.h"
 #include "sudoku.h"
 #include "synoptic.h"
-#include "synoptic_grid.h"
+#include "synoptic_complete.h"
 
 class top:public sc_module
 {
@@ -38,7 +38,7 @@ public:
 
   sc_clock m_clk;
   synoptic::synoptic m_synoptic;
-  sudoku_systemc::synoptic_grid<3> m_grid;
+  sudoku_systemc::synoptic_complete<3> m_complete;
   sudoku_systemc::sudoku<3> * m_sudoku;
 };
 #endif // S_TOP_HPP

@@ -25,15 +25,15 @@ top::top(sc_module_name name,
 	 const std::map<std::pair<unsigned int,unsigned int>,unsigned int> & p_init_values):
   sc_module(name),
   m_clk("clk",10,SC_NS,05),
-  m_synoptic(decltype(m_grid)::get_computed_width(),decltype(m_grid)::get_computed_height()),
-  m_grid(m_synoptic,"grid")
+  m_synoptic(decltype(m_complete)::get_computed_width(),decltype(m_complete)::get_computed_height()),
+  m_complete(m_synoptic)
 {
-  m_synoptic.add_zone(0,0,m_grid);
+  m_synoptic.add_zone(0,0,m_complete);
   m_synoptic.pack();
   m_synoptic.paint();
   m_synoptic.refresh();
 
-  m_sudoku = new sudoku_systemc::sudoku<3>("sudoku",p_init_values,m_grid);
+  m_sudoku = new sudoku_systemc::sudoku<3>("sudoku",p_init_values,m_complete);
   m_sudoku->m_clk(m_clk);
 
   SC_METHOD(refresh_GUI);

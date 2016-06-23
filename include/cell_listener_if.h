@@ -23,10 +23,43 @@ namespace sudoku_systemc
   class cell_listener_if
   {
   public:
-    virtual void set_value(const unsigned int & p_value, const unsigned int & p_hypothesis_level)=0;
-    virtual void clear_value(void)=0;
-    virtual void set_hypothesis_level(const unsigned int & p_level)=0;
-    virtual void mark_as_initial_value(void)=0;
+    typedef enum class FSM_state
+      {
+	VALUE_SENT = 0,
+	CHECK_SENT,
+	VALID_CHECK,
+	CHECK_GRANTED,
+	HYPOTHESIS_SENT,
+	HYPOTHESIS_ACCEPTED,
+	HYPOTHESIS_RETURNED,
+	INVALID_STATE,
+	INVALID_SENT,
+	SET_NEW_LEVEL_SENT
+      } t_FSM_state;
+
+    virtual void set_value(const unsigned int & p_value,
+			   const unsigned int & p_hypothesis_level) = 0;
+    virtual void clear_value(void) = 0;
+    virtual void set_hypothesis_level(const unsigned int & p_level) = 0;
+    virtual void mark_as_initial_value(void) = 0;
+    virtual void set_horizontal_candidate(const unsigned int & p_index,
+					  const unsigned int & p_value,
+					  const unsigned int & p_hypothesis_level) = 0;
+    virtual void set_vertical_candidate(const unsigned int & p_index,
+					const unsigned int & p_value,
+					const unsigned int & p_hypothesis_level) = 0;
+    virtual void set_square_candidate(const unsigned int & p_index,
+				      const unsigned int & p_value,
+				      const unsigned int & p_hypothesis_level) = 0;
+    virtual void set_available_value(const unsigned int & p_index,
+				     bool p_value,
+				     const unsigned int & p_hypothesis_level) = 0;
+    virtual void set_release_value(const unsigned int & p_index,
+				   bool p_value,
+				   const unsigned int & p_hypothesis_level) = 0;
+    virtual void set_internal_state(const t_FSM_state & p_index,
+				    bool p_value) = 0;
+
 
     inline virtual ~cell_listener_if(void){}
   private:

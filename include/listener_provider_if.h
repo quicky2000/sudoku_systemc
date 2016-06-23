@@ -21,6 +21,7 @@
 namespace sudoku_systemc
 {
   class cell_listener_if;
+  class synoptic_bus_listener_if;
 
   /**
      Interface to provide cell listeners
@@ -35,6 +36,14 @@ namespace sudoku_systemc
        @return reference on cell listener dedicated to sudoku cell whose coordinates are provided in parameters
      */
     virtual cell_listener_if & get_cell_listener(const unsigned int & p_x, const unsigned int & p_y)=0;
+
+    /**
+       Return reference on bus listener dedicated to sudoku bus whose coordinates are provided in parameters
+       @param p_x cell abscissa
+       @param p_y cell ordinate
+       @return reference on cell listener dedicated to sudoku cell whose coordinates are provided in parameters
+    */
+    virtual synoptic_bus_listener_if & get_bus_listener(const unsigned int & p_x, const unsigned int & p_y)=0;
 
     inline virtual ~listener_provider_if(void){}
   private:

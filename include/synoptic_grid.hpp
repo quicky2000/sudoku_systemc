@@ -27,7 +27,7 @@ namespace sudoku_systemc
     zone_container(p_name, synoptic_grid<SIZE>::get_computed_width(), synoptic_grid<SIZE>::get_computed_height())
   {
     synoptic_char::init();
-   for(unsigned int l_x = 0 ; l_x < SIZE ; ++l_x)
+    for(unsigned int l_x = 0 ; l_x < SIZE ; ++l_x)
       {
 	for(unsigned int l_y = 0 ; l_y < SIZE ; ++l_y)
 	  {
@@ -86,11 +86,11 @@ namespace sudoku_systemc
 
   //------------------------------------------------------------------------------
   template<unsigned int SIZE>
-  cell_listener_if & synoptic_grid<SIZE>::get_cell_listener(const unsigned int & p_x, const unsigned int & p_y)
+  synoptic_cell & synoptic_grid<SIZE>::get_cell(const unsigned int & p_x, const unsigned int & p_y)
   {
     assert(p_x < SIZE * SIZE);
     assert(p_y < SIZE * SIZE);
-    return m_squares[p_x / 3][p_y / 3]->get_cell_listener(p_x % SIZE, p_y % SIZE);
+    return m_squares[p_x / 3][p_y / 3]->get_cell(p_x % SIZE, p_y % SIZE);
   }
 
   template<unsigned int SIZE>

@@ -48,7 +48,8 @@ sudoku_cell<SIZE,MAX_NB_STATE>::sudoku_cell(sc_module_name name,
   m_activity_counter(1 + SIZE * SIZE * SIZE * SIZE),
   m_message_to_forward(nullptr),
   m_general_hypothesis_level(0),
-  m_nb_state(0)
+  m_nb_state(0),
+  m_FSM_state(p_listener)
 {
   print_name();
   std::cout << "Creation" << std::endl ;
@@ -64,10 +65,6 @@ sudoku_cell<SIZE,MAX_NB_STATE>::sudoku_cell(sc_module_name name,
   SC_THREAD(run);
   sensitive << m_clk.pos();
   
-  if(p_init_value)
-    {
-      m_listener.mark_as_initial_value();
-    }
   m_internal_states[0] = new sudoku_internal_state<SIZE>(m_vertical_sub_group, m_horizontal_sub_group, p_init_value, p_listener);
   for(unsigned int l_index = 1; l_index < SIZE ; ++l_index)
     {

@@ -21,6 +21,7 @@
 #include "systemc.h"
 #include "sudoku_cell.h"
 #include "sudoku_bus.h"
+#include "sudoku_bus_probe.h"
 #include "to_string_if.h"
 #include <iostream>
 #include <map>
@@ -55,6 +56,7 @@ namespace sudoku_systemc
     sc_signal<bool> m_clk_sig;
     sudoku_cell<SIZE> *m_cells2[SIZE * SIZE][SIZE * SIZE];
     sudoku_bus<SIZE> *m_buses[SIZE * SIZE * SIZE * SIZE];
+    sudoku_bus_probe<SIZE> *m_probes[SIZE * SIZE * SIZE * SIZE];
   };
 }
 

@@ -22,21 +22,17 @@ namespace sudoku_systemc
   synoptic_cell::synoptic_cell(synoptic::zone_owner_if & p_owner,
 			       const std::string & p_name):
     synoptic::zone_container(p_name,synoptic_cell::get_computed_width(),synoptic_cell::get_computed_height()),
-    m_char_field(p_owner,p_name + "_char"),
-    m_hypothesis_level(0)
+    m_char_field(p_owner,p_name + "_char")
   {
     add_zone(0,0,m_char_field);
     m_char_field.set_content(' ');
   }
 
   //--------------------------------------------------------------------------
-  void synoptic_cell::set_value(const unsigned int & p_value, const unsigned int & p_hypothesis_level)
+  void synoptic_cell::set_value(const unsigned int & p_value)
   {
-    if(p_hypothesis_level == m_hypothesis_level)
-      {
-	m_char_field.set_content('0' + p_value);
-	m_char_field.paint();
-      }
+    m_char_field.set_content('0' + p_value);
+    m_char_field.paint();
   }
 
   //--------------------------------------------------------------------------
@@ -56,12 +52,6 @@ namespace sudoku_systemc
   const uint32_t & synoptic_cell::get_computed_height(void)
   {
     return synoptic_char::get_height();
-  }
-
-  //----------------------------------------------------------------------------
-  void synoptic_cell::set_hypothesis_level(const unsigned int & p_level)
-  {
-    m_hypothesis_level = p_level;
   }
 
   //----------------------------------------------------------------------------

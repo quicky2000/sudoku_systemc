@@ -44,7 +44,7 @@ namespace sudoku_systemc
       inline static const unsigned int & get_computed_width(void);
       inline static const unsigned int & get_computed_height(void);
 
-      inline cell_listener_if & get_cell_listener(const unsigned int & p_x, const unsigned int & p_y);
+      inline synoptic_cell & get_cell(const unsigned int & p_x, const unsigned int & p_y);
 
     private:
       inline static void compute_dimensions(void);

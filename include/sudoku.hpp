@@ -45,13 +45,20 @@ namespace sudoku_systemc
 	    std::stringstream l_bus_name_stream;
 	    l_bus_name_stream << "Bus_to_" << l_x << "_" << l_y ;
 	    m_buses[l_id] = new sudoku_bus<SIZE>(l_bus_name_stream.str().c_str());
+	    m_probes[l_id] = new sudoku_bus_probe<SIZE>((std::string("Probe_") + l_bus_name_stream.str()).c_str(),p_provider.get_bus_listener(l_x,l_y));
+	    m_probes[l_id]->bind(*m_buses[l_id],m_clk_sig);
 
 	    // Create cell
 	    std::map<std::pair<unsigned int,unsigned int>,unsigned int>::const_iterator l_iter = p_init_values.find(std::pair<unsigned int,unsigned int>(l_x,l_y));
 	    unsigned int l_init_value = (l_iter == p_init_values.end() ? 0 : l_iter->second);
 	    std::stringstream l_cell_name_stream;
 	    l_cell_name_stream << "Cell_" << l_x << "_" << l_y ;
-	    m_cells2[l_x][l_y] = new sudoku_cell<SIZE>(l_cell_name_stream.str().c_str(),*this,l_x,l_y, p_provider.get_cell_listener(l_x,l_y), l_init_value);
+	    cell_listener_if & l_cell_listener = p_provider.get_cell_listener(l_x,l_y);
+	    if(l_init_value)
+	      {
+		l_cell_listener.mark_as_initial_value();
+	      }
+	    m_cells2[l_x][l_y] = new sudoku_cell<SIZE>(l_cell_name_stream.str().c_str(),*this,l_x,l_y, l_cell_listener, l_init_value);
 	    m_cells2[l_x][l_y]->m_clk(m_clk_sig);
 
 	    // Store cell for output port binding
@@ -87,6 +94,7 @@ namespace sudoku_systemc
     for(uint32_t l_id = 0 ; l_id < SIZE * SIZE * SIZE * SIZE; ++l_id)
       {
 	delete m_buses[l_id];
+	delete m_probes[l_id];
       }
   }
 

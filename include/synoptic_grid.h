@@ -20,13 +20,12 @@
 
 #include "zone_container.h"
 #include "synoptic_square.h"
-#include "listener_provider_if.h"
 #include <cassert>
 
 namespace sudoku_systemc
 {
   template<unsigned int SIZE>
-    class synoptic_grid: public synoptic::zone_container, public listener_provider_if
+    class synoptic_grid: public synoptic::zone_container
     {
     public:
       synoptic_grid(synoptic::synoptic &p_owner,
@@ -35,7 +34,7 @@ namespace sudoku_systemc
       inline static const unsigned int & get_computed_width(void);
       inline static const unsigned int & get_computed_height(void);
 
-      inline cell_listener_if & get_cell_listener(const unsigned int & p_x, const unsigned int & p_y) override;
+      inline synoptic_cell & get_cell(const unsigned int & p_x, const unsigned int & p_y);
 
     private:  
       inline static void compute_dimensions(void);

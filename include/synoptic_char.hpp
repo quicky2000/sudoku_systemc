@@ -59,6 +59,8 @@ void synoptic_char::init(void)
       m_content_representation.insert(table_t::value_type('X', 0x0118a94452a31));
       m_content_representation.insert(table_t::value_type('Y', 0x0118a94421084));
       m_content_representation.insert(table_t::value_type('Z', 0x01f088444221f));
+      //      m_content_representation.insert(table_t::value_type('0', 0x00E8C6358C62E));
+      m_content_representation.insert(table_t::value_type('0', 0x1D18C6B18C62E));
       m_content_representation.insert(table_t::value_type('1', 0x08CA10842109F));
       m_content_representation.insert(table_t::value_type('2', 0x1D1884444420F));
       m_content_representation.insert(table_t::value_type('3', 0x1D1085C10862E));
@@ -68,6 +70,7 @@ void synoptic_char::init(void)
       m_content_representation.insert(table_t::value_type('7', 0x3E11088442210));
       m_content_representation.insert(table_t::value_type('8', 0x1D18C5D18C62E));
       m_content_representation.insert(table_t::value_type('9', 0x1D18C5E108898));
+      m_content_representation.insert(table_t::value_type('#', 0xFFFFFFFFFFFFFFFF));
     }
   else
     {

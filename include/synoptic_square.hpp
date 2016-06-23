@@ -98,7 +98,7 @@ namespace sudoku_systemc
 
   //------------------------------------------------------------------------------
   template<unsigned int SIZE>
-  cell_listener_if & synoptic_square<SIZE>::get_cell_listener(const unsigned int & p_x, const unsigned int & p_y)
+  synoptic_cell & synoptic_square<SIZE>::get_cell(const unsigned int & p_x, const unsigned int & p_y)
   {
     assert(p_x < SIZE);
     assert(p_y < SIZE);

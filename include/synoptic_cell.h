@@ -26,7 +26,7 @@
 
 namespace sudoku_systemc
 {
-  class synoptic_cell: public synoptic::zone_container, public cell_listener_if
+  class synoptic_cell: public synoptic::zone_container
   {
   public:
     inline synoptic_cell(synoptic::zone_owner_if &,
@@ -34,16 +34,12 @@ namespace sudoku_systemc
     inline static const uint32_t & get_computed_width(void);
     inline static const uint32_t & get_computed_height(void);
 
+    inline void set_value(const unsigned int & p_value);
+    inline void clear_value(void);
+    inline void mark_as_initial_value(void);
   private:
-    // Methods inherited from cell_listener_if
-    inline void set_value(const unsigned int & p_value, const unsigned int & p_hypothesis_level) override;
-    inline void clear_value(void) override;
-    inline void set_hypothesis_level(const unsigned int & p_level) override;
-    inline void mark_as_initial_value(void) override;
-    // End of methods inherited from cell_listener_if
 
     synoptic_char m_char_field;
-    unsigned int m_hypothesis_level;
   };
 }
 

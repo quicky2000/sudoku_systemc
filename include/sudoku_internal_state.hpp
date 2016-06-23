@@ -36,9 +36,11 @@ namespace sudoku_systemc
   {
     for(uint32_t l_index = 0 ; l_index < sudoku_configuration<SIZE>::m_nb_value; ++l_index)
       {
-	m_vertical_candidates[l_index] = sudoku_configuration<SIZE>::m_nb_value - 1;
-	m_horizontal_candidates[l_index] = sudoku_configuration<SIZE>::m_nb_value - 1;
-	m_square_candidates[l_index] = sudoku_configuration<SIZE>::m_nb_value - 1;
+	set_vertical_candidate(l_index, sudoku_configuration<SIZE>::m_nb_value - 1);
+	set_horizontal_candidate(l_index, sudoku_configuration<SIZE>::m_nb_value - 1);
+	set_square_candidate(l_index, sudoku_configuration<SIZE>::m_nb_value - 1);
+	// For display only
+	set_available_value(l_index, true);
       }
     if(p_initial_value)
       {
@@ -61,9 +63,12 @@ namespace sudoku_systemc
   {
     for(uint32_t l_index = 0 ; l_index < sudoku_configuration<SIZE>::m_nb_value; ++l_index)
       {
-	m_vertical_candidates[l_index] = p_initial_state.m_vertical_candidates[l_index];
-	m_horizontal_candidates[l_index] = p_initial_state.m_horizontal_candidates[l_index];
-	m_square_candidates[l_index] = p_initial_state.m_square_candidates[l_index];
+	set_vertical_candidate(l_index, p_initial_state.m_vertical_candidates[l_index]);
+	set_horizontal_candidate(l_index,p_initial_state.m_horizontal_candidates[l_index]);
+	set_square_candidate(l_index, p_initial_state.m_square_candidates[l_index]);
+	// For display only
+	set_available_value(l_index,m_available_values[l_index]);
+	set_release_value(l_index,m_values_to_release[l_index]);
       }
   }
 
@@ -86,7 +91,7 @@ namespace sudoku_systemc
   void sudoku_internal_state<SIZE>::remove_vertical_candidate(const typename sudoku_types<SIZE>::t_data_type & p_value)
   {
     std::cout << "Current vertical candidate for value " << get_real_value(p_value) << " = " << m_vertical_candidates[p_value.to_uint()].to_uint() << std::endl ;
-    m_vertical_candidates[p_value.to_uint()] = m_vertical_candidates[p_value.to_uint()].to_uint()-1;
+    set_vertical_candidate(p_value.to_uint(), m_vertical_candidates[p_value.to_uint()].to_uint() - 1);
     std::cout << "New current vertical candidate for value " << get_real_value(p_value) << " = " << m_vertical_candidates[p_value.to_uint()].to_uint() << std::endl ;
     if(m_vertical_candidates[p_value.to_uint()] == 0 && m_available_values[p_value.to_uint()] == true)
       {
@@ -100,7 +105,7 @@ namespace sudoku_systemc
   void sudoku_internal_state<SIZE>::remove_horizontal_candidate(const typename sudoku_types<SIZE>::t_data_type & p_value)
   {
     std::cout << "Current horizontal candidate for value " << get_real_value(p_value) << " = " << m_horizontal_candidates[p_value.to_uint()].to_uint() << std::endl ;
-    m_horizontal_candidates[p_value.to_uint()] = m_horizontal_candidates[p_value.to_uint()].to_uint()-1;
+    set_horizontal_candidate(p_value.to_uint(), m_horizontal_candidates[p_value.to_uint()].to_uint() - 1);
     std::cout << "New current horizontal candidate for value " << get_real_value(p_value) << " = " << m_horizontal_candidates[p_value.to_uint()].to_uint() << std::endl ;
     if(m_horizontal_candidates[p_value.to_uint()] == 0 && m_available_values[p_value.to_uint()] == true)
       {
@@ -114,7 +119,7 @@ namespace sudoku_systemc
   void sudoku_internal_state<SIZE>::remove_square_candidate(const typename sudoku_types<SIZE>::t_data_type & p_value)
   {
     std::cout << "Current square candidate for value " << get_real_value(p_value) << " = " << m_square_candidates[p_value.to_uint()].to_uint() << std::endl ;
-    m_square_candidates[p_value.to_uint()] = m_square_candidates[p_value.to_uint()].to_uint()-1;
+    set_square_candidate(p_value.to_uint(), m_square_candidates[p_value.to_uint()].to_uint() - 1);
     std::cout << "New current square candidate for value " << get_real_value(p_value) << " = " << m_square_candidates[p_value.to_uint()].to_uint() << std::endl ;
     if(m_square_candidates[p_value.to_uint()] == 0 && m_available_values[p_value.to_uint()] == true)
       {
@@ -131,11 +136,12 @@ namespace sudoku_systemc
     std::cout << "Nb available values " << m_nb_available_values.to_uint() << std::endl ;
     if(m_available_values[p_value.to_uint()] == true) 
       {
-	m_available_values[p_value.to_uint()] = false;
+	set_available_value(p_value.to_uint(), false);
 	std::cout << "New available values " << m_available_values << std::endl ;
 	m_nb_available_values = m_nb_available_values.to_uint() - 1;
 	std::cout << "New available values " << m_nb_available_values.to_uint() << std::endl ;
-	m_values_to_release[p_value.to_uint()] = true;
+	//	m_values_to_release[p_value.to_uint()] = true;
+	set_release_value(p_value.to_uint(), true);
 	if(m_nb_available_values.to_uint() == 1)
 	  {
 	    unsigned int l_index = 0;
@@ -186,7 +192,8 @@ namespace sudoku_systemc
       {
 	l_index = l_index.to_uint()-1;
       }
-    m_values_to_release[l_index.to_uint()]= false;
+    //  m_values_to_release[l_index.to_uint()]= false;
+    set_release_value(l_index.to_uint(), false);
     return l_index;
   }
 
@@ -215,9 +222,15 @@ namespace sudoku_systemc
     m_listener.set_value(p_value.to_uint() + 1, m_hypothesis_level);
     m_value_set = true;
     m_value = p_value;
-    m_available_values[p_value.to_uint()] = false;
+    //    m_available_values[p_value.to_uint()] = false;
+    set_available_value(p_value.to_uint(), false);
     m_nb_available_values = m_nb_available_values.to_uint() - 1;
     m_values_to_release |= m_available_values;
+    for(uint32_t l_index = 0 ; l_index < sudoku_configuration<SIZE>::m_nb_value; ++l_index)
+      {
+	// For display only
+	set_release_value(l_index,m_values_to_release[l_index]);
+      }
     m_modified = true;
   }
 
@@ -226,6 +239,49 @@ namespace sudoku_systemc
   unsigned int sudoku_internal_state<SIZE>::get_real_value(const typename sudoku_types<SIZE>::t_data_type & p_value)const
   {
     return p_value.to_uint()+1;
+  }
+
+  //----------------------------------------------------------------------------
+  template<unsigned int SIZE> 
+  void sudoku_internal_state<SIZE>::set_horizontal_candidate(const unsigned int & p_index,
+							     const typename sudoku_types<SIZE>::t_group_candidate & p_value)
+  {
+    m_horizontal_candidates[p_index] = p_value;
+    m_listener.set_horizontal_candidate(p_index,p_value.to_uint(), m_hypothesis_level);
+  }
+
+  //----------------------------------------------------------------------------
+  template<unsigned int SIZE> 
+  void sudoku_internal_state<SIZE>::set_vertical_candidate(const unsigned int & p_index,
+							     const typename sudoku_types<SIZE>::t_group_candidate & p_value)
+  {
+    m_vertical_candidates[p_index] = p_value;
+    m_listener.set_vertical_candidate(p_index,p_value.to_uint(), m_hypothesis_level);
+  }
+
+  //----------------------------------------------------------------------------
+  template<unsigned int SIZE> 
+  void sudoku_internal_state<SIZE>::set_square_candidate(const unsigned int & p_index,
+							     const typename sudoku_types<SIZE>::t_group_candidate & p_value)
+  {
+    m_square_candidates[p_index] = p_value;
+    m_listener.set_square_candidate(p_index,p_value.to_uint(), m_hypothesis_level);
+  }
+
+  //----------------------------------------------------------------------------
+  template<unsigned int SIZE> 
+  void sudoku_internal_state<SIZE>::set_available_value(const unsigned int & p_index, bool p_value)
+  {
+    m_available_values[p_index] = p_value;
+    m_listener.set_available_value(p_index, p_value, m_hypothesis_level);
+  }
+
+  //----------------------------------------------------------------------------
+  template<unsigned int SIZE> 
+  void sudoku_internal_state<SIZE>::set_release_value(const unsigned int & p_index, bool p_value)
+  {
+    m_values_to_release[p_index] = p_value;
+    m_listener.set_release_value(p_index, p_value, m_hypothesis_level);
   }
 
   //----------------------------------------------------------------------------
@@ -240,6 +296,15 @@ namespace sudoku_systemc
       {
 	m_listener.clear_value();
       }
+    for(uint32_t l_index = 0 ; l_index < sudoku_configuration<SIZE>::m_nb_value; ++l_index)
+      {
+	m_listener.set_horizontal_candidate(l_index, m_horizontal_candidates[l_index].to_uint(), m_hypothesis_level);
+	m_listener.set_vertical_candidate(l_index, m_vertical_candidates[l_index].to_uint(), m_hypothesis_level);
+	m_listener.set_square_candidate(l_index, m_square_candidates[l_index].to_uint(), m_hypothesis_level);
+	m_listener.set_available_value(l_index, m_available_values[l_index], m_hypothesis_level);
+	m_listener.set_release_value(l_index, m_available_values[l_index], m_hypothesis_level);
+      }
+    
   }
 }
 //EOF
