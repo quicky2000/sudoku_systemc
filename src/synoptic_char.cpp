@@ -1,5 +1,5 @@
 /*    This file is part of synoptic_systemc
-      The aim of this software is to solvde dicoplus game
+      The aim of this software is to solve sudoku game
       Copyright (C) 2014  Julien Thevenon ( julien_thevenon at yahoo.fr )
 
       This program is free software: you can redistribute it and/or modify
